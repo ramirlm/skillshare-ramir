@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "workspace-manager": {
+      "version": "1.0.0",
+      "installedAt": 1770468607744
+    },
+    "council-of-the-wise": {
+      "version": "1.3.1",
+      "installedAt": 1770468609102
+    },
+    "table-image-generator": {
+      "version": "1.3.0",
+      "installedAt": 1770468610549
+    },
+    "moltthreats": {
+      "version": "0.6.0",
+      "installedAt": 1770594216058
+    },
+    "summarize": {
+      "version": "1.0.0",
+      "installedAt": 1771093985104
+    },
+    "ontology": {
+      "version": "0.1.2",
+      "installedAt": 1771105047117
+    },
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1771164313285
+    },
+    "clawvault": {
+      "version": "2.4.6",
+      "installedAt": 1771164500915
+    },
+    "clawddocs": {
+      "version": "1.2.2",
+      "installedAt": 1771284854538
+    }
+  }
+}
