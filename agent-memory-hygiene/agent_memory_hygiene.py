@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import yaml
+import tempfile
+import subprocess
 
 ONTOLOGY_SCRIPT = Path('/home/rlmit/clawdbot-skills/skills/ontology/scripts/ontology.py')
 
@@ -155,7 +157,7 @@ def split_memory(md: str) -> SplitResult:
             "\n---\n\n"
             "## 📦 Conteúdo operacional migrado\n\n"
             "Conteúdo operacional foi migrado para `TOOLS.md` e para um extrato no Obsidian ("
-            "`OpenClaw/Agentes/Memory Extracts/<agent>/memory-extract-YYYY-MM-DD.md`).\n"
+            "`ClawVault (~/Obsidian/inbox)`).\n"
         )
 
     return SplitResult(kept=kept, moved=moved)
@@ -224,23 +226,48 @@ def write_obsidian_extract(obsidian_root: Path, agent_id: str, moved_text: str, 
     if not moved_text.strip():
         return None
 
-    out_dir = obsidian_root / "OpenClaw" / "Agentes" / "Memory Extracts" / agent_id
-    out_path = out_dir / f"memory-extract-{datetime.now().strftime('%Y-%m-%d')}.md"
+    title = f"memory-extract-{agent_id}-{datetime.now().strftime('%Y-%m-%d')}"
     fm = {
         "title": f"Memory Extract — {agent_id} — {datetime.now().strftime('%Y-%m-%d')}",
-        "category": "openclaw",
+        "category": "agents",
         "memoryType": "extract",
         "memoryMode": "proactive",
-        "tags": ["openclaw", "agents", "memory", agent_id],
+        "tags": ["agents", "memory", agent_id],
         "processedAt": now_iso_fortaleza(),
     }
     content = "---\n" + yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip() + "\n---\n\n"
     content += redact_secrets(moved_text.strip()) + "\n"
 
-    if write:
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(content, encoding="utf-8")
-    return out_path
+    if not write:
+        return None
+
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False, encoding="utf-8") as f:
+        f.write(content)
+        tmp_file = f.name
+
+    cmd = [
+        "clawvault",
+        "store",
+        "-c",
+        "inbox",
+        "-t",
+        title,
+        "-f",
+        tmp_file,
+        "--vault",
+        str(obsidian_root),
+        "--no-index",
+    ]
+
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    out = (proc.stdout or "") + "\n" + (proc.stderr or "")
+    os.remove(tmp_file)
+
+    m = re.search(r"^Path:\s*(.+)$", out, re.M)
+    if m:
+        return Path(m.group(1).strip())
+
+    return obsidian_root / "inbox" / f"{title}.md"
 
 
 def process_agent(agent_dir: Path, obsidian_root: Path, ont_bridge: Optional[OntologyBridge], write: bool) -> dict:
@@ -276,7 +303,7 @@ def process_agent(agent_dir: Path, obsidian_root: Path, ont_bridge: Optional[Ont
         links = 0
         for title in titles:
             path_ref = str(obs_path) if obs_path else str(
-                (obsidian_root / "OpenClaw" / "Agentes" / "Memory Extracts" / agent_id / f"memory-extract-{today}.md")
+                (obsidian_root / "inbox" / f"memory-extract-{agent_id}-{today}.md")
             )
             did, created = ont_bridge.ensure_document(
                 {

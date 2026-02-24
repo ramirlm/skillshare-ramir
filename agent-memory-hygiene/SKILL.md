@@ -20,7 +20,7 @@ Padroniza o uso de `MEMORY.md` vs `TOOLS.md` em **todos os agentes** (workspaces
 
 ## Onde salva
 
-- Obsidian: `~/Obsidian/OpenClaw/Agentes/Memory Extracts/<agentId>/memory-extract-YYYY-MM-DD.md`
+- Obsidian: `~/Obsidian/inbox/memory-extract-<agentId>-YYYY-MM-DD.md` (armazenado via clawvault + ontology)
 - Ontology: `~/clawdbot-agents/main/memory/ontology/graph.jsonl` (+ `schema.yaml`)
 
 ## Executar
