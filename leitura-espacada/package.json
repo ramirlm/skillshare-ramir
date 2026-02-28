@@ -1,0 +1,27 @@
+{
+  "name": "leitura-espacada",
+  "version": "1.0.0",
+  "description": "Sistema de leitura com Repetição Espaçada para Obsidian",
+  "main": "scripts/leitura.js",
+  "bin": {
+    "leitura": "./scripts/leitura-cli.sh"
+  },
+  "scripts": {
+    "test": "echo 'Run: leitura help'",
+    "setup": "./scripts/leitura-cli.sh init"
+  },
+  "keywords": [
+    "spaced-repetition",
+    "learning",
+    "obsidian",
+    "clawvault",
+    "ontology",
+    "bible",
+    "study"
+  ],
+  "author": "Ramir",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
