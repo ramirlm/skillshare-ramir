@@ -1,6 +1,21 @@
 ---
 name: brainstorming
 description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+version: 1.1.0
+author: ramirlm
+triggers:
+  - "brainstorm"
+  - "design"
+  - "let's plan"
+  - "vamos planejar"
+  - "me ajuda a pensar"
+  - "ideias para"
+  - "como implementar"
+  - "como construir"
+metadata:
+  clawdbot:
+    emoji: "💡"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # Brainstorming Ideas Into Designs
@@ -52,3 +67,16 @@ Start by understanding the current project context, then ask questions one at a 
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Incremental validation** - Present design in sections, validate each
 - **Be flexible** - Go back and clarify when something doesn't make sense
+
+## Error Handling
+
+- **Unclear intent**: Ask "Can you tell me more about what you're trying to accomplish?" before proposing solutions
+- **Missing context**: If no project files exist yet, begin from scratch and ask about constraints
+- **Conflicting requirements**: Surface the conflict explicitly and ask the user to resolve it before continuing
+- **Scope creep**: Flag when new requirements change the architecture, re-present updated approach
+
+## Security & Privacy
+
+- Do not read files outside the current project without explicit user permission
+- Do not include credentials, API keys, or sensitive data in design documents
+- When designing authentication/authorization flows, default to security best practices (least privilege, encryption at rest/transit)

@@ -81,3 +81,11 @@ X-only filters (server-side via x_search tool params):
 
 - `citations` are merged/validated from xAI response annotations where possible (more reliable than trusting the model’s JSON blindly).
 - Prefer `--x` for tweets/threads, `--web` for general research.
+
+## Error Handling
+
+- **`XAI_API_KEY` not set**: Display the key lookup order (env → clawdbot.json → skills entries) and guide the user to configure it
+- **API rate limit hit**: Inform the user, suggest waiting 60 seconds, and offer to retry
+- **Network error / timeout**: Retry once automatically; if it fails again, report the error with the exact HTTP status code
+- **No results returned**: Confirm the query was valid and suggest reformulating with different keywords
+- **Node.js not installed**: Guide installation and confirm the script requires Node.js ≥ 18

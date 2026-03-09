@@ -128,3 +128,33 @@ See `references/` for detailed documentation:
 - `agent-usage.md` - How AI agents execute PRDs (Claude Code, OpenCode, etc.)
 - `workflows.md` - Sequential workflow patterns
 - `output-patterns.md` - Templates and examples
+
+## Validation Rules
+
+Before executing a PRD, validate the JSON structure:
+
+```bash
+# Validate prd.json structure
+jq 'if .userStories | length == 0 then error("No user stories defined") else . end' agents/prd.json
+
+# Check for duplicate IDs
+jq '[.userStories[].id] | group_by(.) | map(select(length > 1)) | if length > 0 then error("Duplicate story IDs: \(.)") else "OK" end' agents/prd.json
+
+# Check all acceptance criteria are non-empty
+jq '.userStories[] | select(.acceptanceCriteria | length == 0) | .id' agents/prd.json
+```
+
+### Pre-execution Checklist
+- [ ] All story IDs are unique
+- [ ] All stories have at least one acceptance criterion
+- [ ] Priority order matches dependency order (schema before UI, backend before frontend)
+- [ ] No story depends on a higher-priority story that hasn't been completed yet
+- [ ] Branch name follows convention (`ralph/feature-name`)
+- [ ] "Typecheck passes" is included in acceptance criteria where applicable
+
+## Error Handling
+
+- **prd.json not found**: Ask user to create the file or run `prd create` to initialize a template
+- **Malformed JSON**: Show the JSON parse error location and offer to fix common issues (trailing commas, missing quotes)
+- **Story marked `passes: false` but looks complete**: Ask user to confirm before marking as complete
+- **Story too large to complete in one context**: Surface a warning and suggest how to split it
