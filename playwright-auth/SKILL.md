@@ -1,9 +1,17 @@
 ---
 name: playwright-auth
 description: Save browser authentication for any website using Playwright. Login once, reuse forever. Simple auth storage for Twitter, LinkedIn, Facebook, etc.
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "salvar autenticação"
+  - "save auth"
+  - "login playwright"
+  - "browser auth"
 metadata:
   clawdbot:
-    emoji: 🔐
+    emoji: "🔐"
+    os: ["linux", "darwin"]
     requires:
       bins: ["python3"]
       packages: ["playwright"]

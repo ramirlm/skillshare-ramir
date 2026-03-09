@@ -1,6 +1,16 @@
 ---
 name: skill-creator
 description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+version: 1.0.0
+triggers:
+  - "criar skill"
+  - "create skill"
+  - "nova skill"
+  - "new skill"
+metadata:
+  clawdbot:
+    emoji: "🛠️"
+    os: ["linux", "darwin", "windows"]
 license: Complete terms in LICENSE.txt
 ---
 

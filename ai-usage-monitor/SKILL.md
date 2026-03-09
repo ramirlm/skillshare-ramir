@@ -1,6 +1,18 @@
 ---
 name: ai-usage-monitor
 description: Monitor usage and estimate consumption for AI tools with different billing cycles. Fetches real-time data when APIs are available. Use when user wants to (1) Check current usage of AI tools like Cursor, Codex, Copilot, Synthetic, or Warp, (2) Get estimates of remaining time/budget, (3) Log new usage data, (4) Generate usage reports, (5) Understand if they are on track with their AI tool consumption, or (6) Set up automated daily reports.
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "uso de AI"
+  - "consumo de IA"
+  - "AI usage"
+  - "check cursor usage"
+  - "monitor AI"
+metadata:
+  clawdbot:
+    emoji: "📊"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # AI Usage Monitor
@@ -139,3 +151,15 @@ Ver [references/tools_config.md](references/tools_config.md) para:
 - Detalhes dos modelos de cobrança
 - Fórmulas de cálculo
 - Estrutura do banco de dados
+
+## Tratamento de Erros
+
+- **API key não configurada**: Reportar a ferramenta com status "⚠️ sem API key" e continuar com as demais
+- **Banco de dados corrompido**: Fazer backup e recriar o arquivo `.ai_usage_monitor.db`
+- **Endpoint indisponível**: Usar dados locais e sinalizar que os dados podem estar desatualizados
+- **Ciclo de cobrança não configurado**: Solicitar ao usuário a data de início do ciclo e salvar para uso futuro
+
+## Privacidade
+
+- O banco de dados de uso (`~/.ai_usage_monitor.db`) pode conter informações sensíveis de uso; não compartilhar sem autorização
+- As chaves de API (API keys) nunca devem ser incluídas em relatórios ou logs; apenas os nomes das variáveis são registrados

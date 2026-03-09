@@ -1,7 +1,9 @@
 ---
 name: parallel-task
 description: >
-  Only to be triggered by explicit /parallel-task commands. Orchestrates parallel execution of tasks from a plan file, delegating to subagents in dependency order.
+  Only to be triggered by explicit /parallel-task commands.
+  Orchestrates parallel execution of tasks from a plan file,
+  delegating to subagents in dependency order.
 version: 1.1.0
 author: ramirlm
 triggers:

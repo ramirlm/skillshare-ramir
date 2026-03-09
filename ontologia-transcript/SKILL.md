@@ -1,6 +1,16 @@
 ---
 name: ontologia-transcript
 description: "Processar transcrições de reuniões usando summarize e ontology. Use quando o Ramir colar/enviar uma transcrição de reunião e quiser: (1) resumir usando a skill summarize, (2) fazer análise completa da ontologia usando a skill ontology sobre tudo o que foi dito, (3) persistir tudo no vault (Obsidian) e ontology. Se for falado sobre solução/implementação, sugere usar skill transcription para o PRD (opcional)."
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "processar transcrição"
+  - "ontologia da reunião"
+  - "salvar transcrição"
+metadata:
+  clawdbot:
+    emoji: "🗺️"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # Ontologia Transcript

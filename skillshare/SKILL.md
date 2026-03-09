@@ -1,6 +1,12 @@
 ---
 name: skillshare
 version: v0.16.2
+author: ramirlm
+triggers:
+  - "skillshare"
+  - "install skill"
+  - "sync skills"
+  - "manage skills"
 description: |
   Syncs skills across AI CLI tools from a single source of truth.
   Global (~/.config/skillshare/) or project (.skillshare/) mode.
