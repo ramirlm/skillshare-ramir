@@ -4,6 +4,16 @@ description: Send an idea to the Council of the Wise for multi-perspective feedb
 version: 1.3.1
 author: jeffaf
 credits: Inspired by Daniel Miessler's PAI (Personal AI Infrastructure). Architect, Engineer, and Artist agents adapted from PAI patterns. Devil's Advocate is an original creation.
+triggers:
+  - "send this to the council"
+  - "council of the wise"
+  - "get the council's feedback on"
+  - "mande para o conselho"
+  - "conselho dos sábios"
+metadata:
+  clawdbot:
+    emoji: "🏛️"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # Council of the Wise
