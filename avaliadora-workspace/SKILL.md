@@ -1,6 +1,18 @@
 ---
 name: avaliadora-workspace
 description: "Audita e avalia o workspace do Clawdbot/OpenClaw para otimização de memória e performance, com foco em sinergia entre Obsidian (ClawVault), ontology, prompts (SOUL/IDENTITY/USER), memória operacional (SESSION-STATE), crons/scheduler, configurações de LLM/modelos e organização de agentes. Use quando Ramir pedir para unificar o sistema, melhorar retenção de contexto (conhecer melhor o Ramir) e propor correções seguras (sempre pedindo confirmação antes de mudanças)."
+version: 1.1.0
+author: ramirlm
+triggers:
+  - "auditar workspace"
+  - "avaliar workspace"
+  - "otimizar sistema"
+  - "avaliadora"
+  - "auditoria do agente"
+metadata:
+  clawdbot:
+    emoji: "🔍"
+    os: ["linux", "darwin"]
 ---
 
 # Avaliadora Workspace

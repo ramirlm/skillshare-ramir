@@ -1,7 +1,19 @@
 ---
 name: agent-memory-hygiene
 description: Refatora MEMORY.md dos agentes com ação corretiva (proativa), migra runbooks/tool-notes para TOOLS.md/Obsidian e normaliza entradas na Ontology.
-metadata: {"clawdbot":{"emoji":"🧹","os":["linux"],"requires":{"bins":["python3"]}}}
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "/agent-memory-hygiene"
+  - "limpar memória dos agentes"
+  - "refatorar MEMORY.md"
+  - "migrar TOOLS.md"
+metadata:
+  clawdbot:
+    emoji: "🧹"
+    os: ["linux"]
+    requires:
+      bins: ["python3"]
 ---
 
 # /agent-memory-hygiene
@@ -20,19 +32,24 @@ Padroniza o uso de `MEMORY.md` vs `TOOLS.md` em **todos os agentes** (workspaces
 
 ## Onde salva
 
-- Obsidian: `~/Obsidian/inbox/memory-extract-<agentId>-YYYY-MM-DD.md` (armazenado via clawvault + ontology)
-- Ontology: `~/clawdbot-agents/main/memory/ontology/graph.jsonl` (+ `schema.yaml`)
+- Obsidian: `[OBSIDIAN_VAULT]/inbox/memory-extract-<agentId>-YYYY-MM-DD.md` (armazenado via clawvault + ontology)
+- Ontology: `[AGENTS_ROOT]/main/memory/ontology/graph.jsonl` (+ `schema.yaml`)
+
+> Substitua `[OBSIDIAN_VAULT]` por `$HOME/Obsidian` (ou valor de `CLAWVAULT_PATH`) e `[AGENTS_ROOT]` por `$HOME/clawdbot-agents`.
 
 ## Executar
 
 Dry-run:
 ```bash
-python3 /home/rlmit/clawdbot-skills/agent-memory-hygiene/agent_memory_hygiene.py --agents-root "$HOME/clawdbot-agents" --obsidian "$HOME/Obsidian" --ontology-root "$HOME/clawdbot-agents/main/memory/ontology"
+python3 {baseDir}/agent_memory_hygiene.py \
+  --agents-root "$HOME/clawdbot-agents" \
+  --obsidian "$HOME/Obsidian" \
+  --ontology-root "$HOME/clawdbot-agents/main/memory/ontology"
 ```
 
 Aplicar:
 ```bash
-python3 /home/rlmit/clawdbot-skills/agent-memory-hygiene/agent_memory_hygiene.py \
+python3 {baseDir}/agent_memory_hygiene.py \
   --agents-root "$HOME/clawdbot-agents" \
   --obsidian "$HOME/Obsidian" \
   --ontology-root "$HOME/clawdbot-agents/main/memory/ontology" \
@@ -41,5 +58,14 @@ python3 /home/rlmit/clawdbot-skills/agent-memory-hygiene/agent_memory_hygiene.py
 
 Validação extra (recomendada):
 ```bash
-python3 /home/rlmit/clawdbot-skills/skills/ontology/scripts/ontology.py validate --graph "$HOME/clawdbot-agents/main/memory/ontology/graph.jsonl" --schema "$HOME/clawdbot-agents/main/memory/ontology/schema.yaml"
+python3 {baseDir}/scripts/ontology.py validate \
+  --graph "$HOME/clawdbot-agents/main/memory/ontology/graph.jsonl" \
+  --schema "$HOME/clawdbot-agents/main/memory/ontology/schema.yaml"
 ```
+## Segurança
+
+- **Dry-run por padrão**: Sem `--write`, o script apenas exibe o que seria feito — nunca modifica arquivos diretamente
+- **Sem deleção**: O script desloca e enriquece conteúdo; nunca apaga dados originais
+- **Redação de segredos**: Antes de escrever no Obsidian, strings que parecem tokens ou senhas são redatadas automaticamente
+- **Confirmação obrigatória**: O usuário deve inspecionar o dry-run antes de executar com `--write`
+- **Backup recomendado**: Fazer commit ou backup do `MEMORY.md` antes de aplicar migrações em lote

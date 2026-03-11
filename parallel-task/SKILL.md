@@ -1,7 +1,17 @@
 ---
 name: parallel-task
 description: >
-  Only to be triggered by explicit /parallel-task commands. 
+  Only to be triggered by explicit /parallel-task commands.
+  Orchestrates parallel execution of tasks from a plan file,
+  delegating to subagents in dependency order.
+version: 1.1.0
+author: ramirlm
+triggers:
+  - "/parallel-task"
+metadata:
+  clawdbot:
+    emoji: "⚡"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # Parallel Task Executor
@@ -146,3 +156,20 @@ After subagents complete their work:
 ## Next Steps
 [Recommendations]
 ```
+
+
+## Security & Safety
+
+- **File scope**: Subagents must only modify files within the project directory; never access `~/.ssh`, `~/.clawdbot`, or other sensitive system paths
+- **No push**: Subagents commit only; the orchestrator pushes after validating all waves
+- **Credentials**: Never include API keys, tokens, or passwords in task prompts or plan files
+- **Destructive operations**: Any task that deletes files or drops database tables requires explicit user confirmation before execution
+- **Isolation**: If a subagent encounters unexpected destructive changes, it must stop and escalate rather than proceed
+
+## Error Handling
+
+- **Plan file not found**: List the working directory and ask user to confirm the correct plan file path
+- **Circular dependency**: Detect cycles before launching any tasks; report the cycle and ask user to resolve it
+- **Subagent timeout**: Return partial results with a clear indication of which tasks were not completed
+- **Commit conflict**: If two subagents modify the same file, pause, report the conflict, and ask the user for resolution strategy
+- **Validation failure**: Re-run the failed task once; if it fails again, mark as BLOCKED and continue with unblocked tasks

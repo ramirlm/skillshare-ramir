@@ -1,7 +1,18 @@
 ---
 name: process-vault-frontmatters
 description: Varre o vault do Obsidian e garante YAML frontmatter (title, summary) e atualiza processedAt para evitar reprocessamento.
-metadata: {"clawdbot":{"emoji":"🗂️","os":["linux"],"requires":{"bins":["python3"]}}}
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "processar vault"
+  - "atualizar frontmatters"
+  - "padronizar notas"
+metadata:
+  clawdbot:
+    emoji: "🗂️"
+    os: ["linux"]
+    requires:
+      bins: ["python3"]
 ---
 
 # /process-vault-frontmatters

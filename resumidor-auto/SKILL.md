@@ -1,6 +1,19 @@
 ---
 name: resumidor-auto
 description: "Agente especializado em resumir automaticamente conteúdos e salvá-los no Obsidian. Use quando: (1) Ramir enviar conteúdo para resumir, (2) Salvar informações importantes, (3) Preservar conhecimento para referência futura, (4) Organizar textos, artigos, documentos ou conversas relevantes."
+version: 1.1.0
+author: ramirlm
+triggers:
+  - "resumir"
+  - "resume isso"
+  - "salvar isso"
+  - "resumo de"
+  - "summary"
+  - "sintetizar"
+metadata:
+  clawdbot:
+    emoji: "📝"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # Resumidor Automático
@@ -40,7 +53,9 @@ Determinar automaticamente a categoria baseado no conteúdo:
 - `Igreja/` - Assuntos religiosos, católicos, comunidade
 
 ### 3. Salvamento no Obsidian
-Sempre salvar em: `/home/rlmit/clawdmold/Resumos/[Categoria]/`
+Sempre salvar em: `[VAULT]/Resumos/[Categoria]/`
+
+> O caminho padrão do vault é `~/Obsidian`. Se o vault estiver em outro local, use o configurado em `CLAWVAULT_PATH`.
 
 **Nomenclatura**: `AAAA-MM-DD_titulo-resumido.md`
 
@@ -201,3 +216,17 @@ Use tags consistentes para facilitar busca:
 4. **Criar pastas** automaticamente se categoria nova for necessária
 5. **Linkar documentos** relacionados quando apropriado
 6. **Nunca perder** informações críticas ao resumir
+
+## Tratamento de Erros
+
+- **Vault não encontrado**: Se `[VAULT]/Resumos/` não existir, perguntar ao usuário se deve criar a pasta antes de salvar
+- **Categoria ambígua**: Se o conteúdo se encaixar em mais de uma categoria, listar as opções e perguntar ao usuário
+- **Conteúdo vazio ou muito curto** (< 50 palavras): Informar que o conteúdo é muito breve e perguntar se deve salvar mesmo assim
+- **Conteúdo sensível detectado** (CPF, senhas, tokens): Alertar o usuário e não salvar automaticamente sem confirmação explícita
+- **Falha ao salvar**: Se a escrita no vault falhar, exibir o resumo na conversa e orientar o usuário a salvar manualmente
+
+## Privacidade
+
+- Nunca incluir credenciais, tokens de API ou senhas nos resumos salvos
+- Ao resumir documentos legais ou médicos, omitir dados pessoais identificáveis (CPF, RG, número de processo) do conteúdo principal e registrá-los apenas no frontmatter com acesso restrito
+- Não enviar resumos para serviços externos sem aprovação explícita do usuário

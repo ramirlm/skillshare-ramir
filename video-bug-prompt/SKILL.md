@@ -1,6 +1,21 @@
 ---
 name: video-bug-prompt
 description: Analisa vídeos de bugs, extrai frames, detecta mudanças, busca contexto do projeto e gera relatório detalhado com insights para correção. Envia por email com anexos.
+version: 1.1.0
+author: ramirlm
+triggers:
+  - "analise bug"
+  - "relatório de bug"
+  - "analise vídeo"
+  - "bug no vídeo"
+  - "video bug"
+metadata:
+  clawdbot:
+    emoji: "🎥"
+    os: ["linux", "darwin"]
+    requires:
+      bins: ["ffmpeg"]
+      optional: ["pandoc"]
 ---
 
 # video-bug-prompt 🎥🐛
@@ -131,8 +146,7 @@ Anexos:
 
 Nenhuma configuração necessária. A skill usa:
 - Vision model padrão do Clawdbot
-- Email: ramir.mesquita@gmail.com
-- Obsidian vault: ~/Documents/clawdmold/
+- Obsidian vault: configurado em `CLAWVAULT_PATH` (padrão: `~/Obsidian`)
 
 ## Outputs
 
@@ -145,7 +159,7 @@ Nenhuma configuração necessária. A skill usa:
 
 **Arquivos salvos em:**
 ```
-~/clawdbot-agents/main/reports/bugs/
+[REPORTS_DIR]/bugs/
   ├── bug-[ticket]-[date].md
   ├── bug-[ticket]-[date].pdf
   └── frames/
@@ -154,6 +168,8 @@ Nenhuma configuração necessária. A skill usa:
       └── ...
 ```
 
+> `[REPORTS_DIR]` padrão: `~/clawdbot-agents/main/reports`. Configurável via `BUG_REPORTS_PATH`.
+
 ## Dicas
 
 - **Vídeos curtos** (< 2min) funcionam melhor
@@ -161,11 +177,17 @@ Nenhuma configuração necessária. A skill usa:
 - **Inclua contexto verbal** se possível (narração)
 - **Anexe logs/código** quando disponível
 
-## Skill Score
+## Tratamento de Erros
 
-- **Funcional:** 100% ✅
-- **Documentação:** 100% ✅
-- **Testes:** 90% (depende de ffmpeg/pandoc)
-- **Manutenibilidade:** 95%
+- **ffmpeg não instalado**: Informar o erro e guiar instalação (`brew install ffmpeg` / `apt install ffmpeg`)
+- **Vídeo muito longo** (> 10min): Alertar que a análise pode ser lenta e oferecer analisar apenas um intervalo específico
+- **Vídeo sem variação visual**: Informar que não foram detectadas mudanças significativas entre frames
+- **Contexto de projeto não encontrado**: Gerar relatório sem insights de código e indicar que o relatório foi gerado sem contexto
+- **Falha ao enviar email**: Salvar relatório localmente e informar o caminho ao usuário
+- **pandoc não disponível**: Gerar o relatório em Markdown ao invés de PDF
 
-**Overall:** 96% ⭐⭐⭐⭐⭐
+## Privacidade
+
+- Redatar automaticamente dados pessoais (email, CPF, tokens) visíveis nos frames antes de enviar o relatório
+- Não enviar frames de sessões autenticadas (home banking, email) sem confirmação explícita do usuário
+- Perguntar ao usuário antes de incluir código-fonte proprietário no relatório

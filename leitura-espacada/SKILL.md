@@ -1,6 +1,21 @@
 ---
 name: leitura-espacada
 description: "Sistema de leitura com Repetição Espaçada. Use quando: (1) Quiser estudar conteúdo com retenção de longo prazo, (2) Criar cards de estudo de qualquer tema, (3) Implementar revisões espaçadas em leituras diárias, (4) Organizar conhecimento por temas com algoritmo SM-2 simplificado."
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "leitura espaçada"
+  - "repetição espaçada"
+  - "criar card"
+  - "revisar cards"
+  - "estudar hoje"
+  - "spaced repetition"
+metadata:
+  clawdbot:
+    emoji: "📚"
+    os: ["linux", "darwin", "windows"]
+    requires:
+      bins: ["node"]
 ---
 
 # Leitura Espaçada 📚
@@ -30,9 +45,11 @@ Funciona com qualquer tipo de conteúdo: Bíblia, livros, artigos, documentaçã
 # ou inicialize manualmente:
 
 mkdir -p ~/Obsidian/leitura/{cards,revisao,temas,scripts}
-cp ~/clawdbot-skills/leitura-espacada/scripts/*.js ~/Obsidian/leitura/scripts/
-cp ~/clawdbot-skills/leitura-espacada/scripts/*.sh ~/Obsidian/leitura/scripts/
+cp {baseDir}/scripts/*.js ~/Obsidian/leitura/scripts/
+cp {baseDir}/scripts/*.sh ~/Obsidian/leitura/scripts/
 ```
+
+> Substitua `~/Obsidian/leitura` por `$LEITURA_VAULT_PATH` se preferir outro caminho.
 
 ## Estrutura Criada
 
@@ -246,8 +263,26 @@ leitura export --format json --output backup-$(date +%Y%m%d).json
 
 - [Repetição Espaçada - Wikipedia](https://pt.wikipedia.org/wiki/Repeti%C3%A7%C3%A3o_espacial)
 - ClawVault: `clawvault docs`
-- Ontology: `cat ~/clawdbot-skills/skills/ontology/SKILL.md`
+
+## Tratamento de Erros
+
+- **Node.js não instalado**: Informar e guiar instalação (`brew install node` / `apt install nodejs`)
+- **Vault não encontrado**: Perguntar ao usuário o caminho correto e oferecer criar a estrutura
+- **Card não encontrado**: Listar os cards mais recentes e pedir confirmação
+- **Exportação falhou**: Tentar salvar em `/tmp/leitura-backup-YYYYMMDD.json` e informar o usuário
+- **Ontology indisponível**: Continuar operando no modo local (sem criar entidades no grafo)
+- **`leitura` não encontrado no PATH**: Orientar o usuário a usar o caminho completo (`~/Obsidian/leitura/scripts/leitura-cli.sh`)
+
+## Sessão de Estudo Interativa
+
+Quando o usuário disser "estudar agora" ou "iniciar revisão", o fluxo deve ser:
+
+1. Verificar quantos cards estão pendentes: `leitura due`
+2. Se 0 cards: "Nenhum card para revisar hoje! 🎉 Quer adicionar novo conteúdo?"
+3. Se > 20 cards: Perguntar "Você tem [N] cards para revisar. Quer revisar todos ou limitar a [15]?"
+4. Para cada card: mostrar a pergunta, aguardar resposta do usuário, mostrar a resposta correta, pedir avaliação (again/hard/good/easy)
+5. Ao final: exibir resumo da sessão (acertos, evolução de nível, próxima revisão)
 
 ---
 
-*Skill criada em 2026-02-17 | Versão 1.0.0*
+*Skill criada em 2026-02-17*

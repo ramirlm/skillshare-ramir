@@ -4,6 +4,16 @@ description: Send an idea to the Council of the Wise for multi-perspective feedb
 version: 1.3.1
 author: jeffaf
 credits: Inspired by Daniel Miessler's PAI (Personal AI Infrastructure). Architect, Engineer, and Artist agents adapted from PAI patterns. Devil's Advocate is an original creation.
+triggers:
+  - "send this to the council"
+  - "council of the wise"
+  - "get the council's feedback on"
+  - "mande para o conselho"
+  - "conselho dos sábios"
+metadata:
+  clawdbot:
+    emoji: "🏛️"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # Council of the Wise
@@ -131,7 +141,7 @@ No config file needed. The skill auto-discovers agents and uses sensible default
 
 ## Agent Implementation Notes
 
-**Trigger phrases:** "send this to the council", "council of the wise", "get the council's feedback on"
+**Trigger phrases:** "send this to the council", "council of the wise", "get the council's feedback on", "mande para o conselho", "conselho dos sábios"
 
 **When triggered:**
 1. Send loading message: `🏛️ *The Council convenes...* (this takes 2-5 minutes)`
@@ -139,3 +149,11 @@ No config file needed. The skill auto-discovers agents and uses sensible default
 3. Return synthesized council report to user
 
 **Don't invoke for:** Quick questions, time-sensitive tasks, simple decisions.
+
+## Error Handling
+
+- **No agents found in `agents/` folder**: Inform the user and offer to create the default set of 5 agents (DevilsAdvocate, Architect, Engineer, Artist, Quant)
+- **Sub-agent timeout** (5-minute limit exceeded): Return whatever partial results are available, clearly labeled `[PARTIAL - TIMED OUT]`, and list which perspectives were not completed
+- **Sub-agent returns empty response**: Retry once; if it fails again, return the error and suggest the user try with a shorter/simpler input
+- **Custom agents path not found** (`~/.claude/Agents/`): Fall back to bundled agents in `agents/` folder without error
+- **Input too long**: Summarize the input to ~1000 words before sending to council, inform the user that a condensed version was analyzed

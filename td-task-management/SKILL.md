@@ -1,6 +1,19 @@
 ---
 name: td-task-management
 description: Task management for AI agents across context windows. Use when agents need to track work, log progress, hand off state, and maintain context across sessions. Includes workflows for single-issue focus, multi-issue work sessions, and structured handoffs. Essential for AI-assisted development where context windows reset between sessions.
+version: 1.0.0
+triggers:
+  - "td"
+  - "task management"
+  - "log progress"
+  - "handoff task"
+  - "track work"
+metadata:
+  clawdbot:
+    emoji: "📌"
+    os: ["linux", "darwin"]
+    requires:
+      bins: ["td"]
 ---
 
 # td - Task Management for AI Agents

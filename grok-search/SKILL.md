@@ -1,9 +1,26 @@
 ---
 name: grok-search
+version: 1.0.0
+author: ramirlm
 description: Search the web or X/Twitter using xAI Grok server-side tools (web_search, x_search) via the xAI Responses API. Use when you need tweets/threads/users from X, want Grok as an alternative to Brave, or you need structured JSON + citations.
 homepage: https://docs.x.ai/docs/guides/tools/search-tools
-triggers: ["grok", "xai", "search x", "search twitter", "find tweets", "x search", "twitter search", "web_search", "x_search"]
-metadata: {"clawdbot":{"emoji":"🔎","requires":{"bins":["node"],"env":["XAI_API_KEY"]},"primaryEnv":"XAI_API_KEY"}}
+triggers:
+  - "grok"
+  - "xai"
+  - "search x"
+  - "search twitter"
+  - "find tweets"
+  - "x search"
+  - "twitter search"
+  - "web_search"
+  - "x_search"
+metadata:
+  clawdbot:
+    emoji: "🔎"
+    requires:
+      bins: ["node"]
+      env: ["XAI_API_KEY"]
+    primaryEnv: "XAI_API_KEY"
 ---
 
 Run xAI Grok locally via bundled scripts (search + chat + model listing). Default output for search is *pretty JSON* (agent-friendly) with citations.
@@ -81,3 +98,11 @@ X-only filters (server-side via x_search tool params):
 
 - `citations` are merged/validated from xAI response annotations where possible (more reliable than trusting the model’s JSON blindly).
 - Prefer `--x` for tweets/threads, `--web` for general research.
+
+## Error Handling
+
+- **`XAI_API_KEY` not set**: Display the key lookup order (env → clawdbot.json → skills entries) and guide the user to configure it
+- **API rate limit hit**: Inform the user, suggest waiting 60 seconds, and offer to retry
+- **Network error / timeout**: Retry once automatically; if it fails again, report the error with the exact HTTP status code
+- **No results returned**: Confirm the query was valid and suggest reformulating with different keywords
+- **Node.js not installed**: Guide installation and confirm the script requires Node.js ≥ 18

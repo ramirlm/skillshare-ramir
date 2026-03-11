@@ -1,6 +1,16 @@
 ---
 name: notion-readwise-sync
 description: Sync (READ-ONLY) a Notion Readwise Library database (nested in a Readwise page) into the Obsidian vault as curated Markdown notes with ontology-ready frontmatter. Designed for cron + manual runs. Ignores Tweets; prioritizes Books, PDFs, Videos, Articles, Podcasts.
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "sync notion readwise"
+  - "sincronizar readwise"
+  - "importar readwise"
+metadata:
+  clawdbot:
+    emoji: "🔄"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # /notion-readwise-sync

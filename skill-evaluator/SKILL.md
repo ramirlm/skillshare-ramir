@@ -1,6 +1,17 @@
 ---
 name: skill-evaluator
 description: Evaluate Clawdbot skills for quality, reliability, and publish-readiness using a multi-framework rubric (ISO 25010, OpenSSF, Shneiderman, agent-specific heuristics). Use when asked to review, audit, evaluate, score, or assess a skill before publishing, or when checking skill quality. Runs automated structural checks and guides manual assessment across 25 criteria.
+version: 1.0.0
+author: ramirlm
+triggers:
+  - "avaliar skill"
+  - "evaluate skill"
+  - "score skill"
+  - "review skill quality"
+metadata:
+  clawdbot:
+    emoji: "🎯"
+    os: ["linux", "darwin", "windows"]
 ---
 
 # Skill Evaluator
