@@ -40,9 +40,13 @@ Determinar automaticamente a categoria baseado no conteúdo:
 - `Igreja/` - Assuntos religiosos, católicos, comunidade
 
 ### 3. Salvamento no Obsidian
-Sempre salvar em: `/home/rlmit/clawdmold/Resumos/[Categoria]/`
+Sempre salvar em: `/home/rlmit/Obsidian/Resumos/[Categoria]/`
 
 **Nomenclatura**: `AAAA-MM-DD_titulo-resumido.md`
+
+**Política de linking (obrigatória):** Ver `~/clawdbot-agents/main/memory/vault-linking-policy.md`
+- **NUNCA rodar `clawvault link --all`**
+- Frontmatter deve incluir `owner: ramir` e campos semânticos reais
 
 **Formato do arquivo**:
 ```markdown
@@ -51,6 +55,11 @@ data: AAAA-MM-DD
 categoria: [categoria]
 tags: [tag1, tag2, tag3]
 fonte: [fonte se aplicável]
+owner: ramir
+people: [ramir]
+projects: []
+related: []
+topics: []
 ---
 
 # [Título do Conteúdo]

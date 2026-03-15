@@ -21,7 +21,23 @@ Padroniza o uso de `MEMORY.md` vs `TOOLS.md` em **todos os agentes** (workspaces
 ## Onde salva
 
 - Obsidian: `~/Obsidian/inbox/memory-extract-<agentId>-YYYY-MM-DD.md` (armazenado via clawvault + ontology)
+- Arquivamento: `~/Obsidian/archive/memory-extracts/YYYY/MM/`
 - Ontology: `~/clawdbot-agents/main/memory/ontology/graph.jsonl` (+ `schema.yaml`)
+
+## Política de linking (obrigatória)
+
+Ver `~/clawdbot-agents/main/memory/vault-linking-policy.md`.
+
+- Toda nota gerada deve ter `owner: ramir` e `people: [ramir]` no frontmatter
+- **NUNCA rodar `clawvault link --all`**
+- Linking via frontmatter: `people`, `projects`, `related`, `owner`, `topics`
+- Somente slugs reais existentes no vault
+
+## Formato atual do extrato
+
+- Frontmatter canônico: `title`, `type`, `agent`, `source`, `category`, `status`, `retention`, `tags`, `createdAt`, `date`, `owner`, `people`, `projects`, `related`, `topics`
+- Seções mínimas: `Resumo`, `Conteúdo migrado`, `Acompanhamento`
+- Política: manter no `inbox` por 30 dias; depois arquivar; revisar após 180+ dias
 
 ## Executar
 

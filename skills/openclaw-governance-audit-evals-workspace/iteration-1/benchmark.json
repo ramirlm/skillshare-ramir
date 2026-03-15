@@ -1,0 +1,97 @@
+{
+  "skill_name": "openclaw-governance-audit",
+  "iteration": 1,
+  "success_rate": 0.75,
+  "results": [
+    {
+      "id": 1,
+      "name": "skill-doc-has-core-governance-workflow",
+      "passed_assertions": 3,
+      "total_assertions": 3,
+      "success": true,
+      "details": [
+        {
+          "name": "mentions_five_axes",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "mentions_memory_plan",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "uses_rubric",
+          "passed": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "scaffold-generator-creates-report-template",
+      "passed_assertions": 3,
+      "total_assertions": 3,
+      "success": true,
+      "details": [
+        {
+          "name": "script_exists",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "generated_report_contains_scope",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "template_section_memory_plan",
+          "passed": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "references-cover-scoring-and-reporting",
+      "passed_assertions": 3,
+      "total_assertions": 3,
+      "success": true,
+      "details": [
+        {
+          "name": "rubric_exists",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "template_exists",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "rubric_has_score_scale",
+          "passed": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "small-audit-mode-guidance-exists",
+      "passed_assertions": 0,
+      "total_assertions": 1,
+      "success": false,
+      "details": [
+        {
+          "name": "small_audit_guidance",
+          "passed": false,
+          "reason": "missing file_contains match"
+        }
+      ]
+    }
+  ],
+  "key_findings": [
+    "Core references and scaffold script are present and functional.",
+    "Skill lacked explicit guidance for small/time-boxed audits before improvement."
+  ]
+}

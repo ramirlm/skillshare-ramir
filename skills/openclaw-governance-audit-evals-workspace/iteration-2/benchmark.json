@@ -1,0 +1,97 @@
+{
+  "skill_name": "openclaw-governance-audit",
+  "iteration": 2,
+  "success_rate": 1.0,
+  "results": [
+    {
+      "id": 1,
+      "name": "skill-doc-has-core-governance-workflow",
+      "passed_assertions": 3,
+      "total_assertions": 3,
+      "success": true,
+      "details": [
+        {
+          "name": "mentions_five_axes",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "mentions_memory_plan",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "uses_rubric",
+          "passed": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "scaffold-generator-creates-report-template",
+      "passed_assertions": 3,
+      "total_assertions": 3,
+      "success": true,
+      "details": [
+        {
+          "name": "script_exists",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "generated_report_contains_scope",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "template_section_memory_plan",
+          "passed": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "references-cover-scoring-and-reporting",
+      "passed_assertions": 3,
+      "total_assertions": 3,
+      "success": true,
+      "details": [
+        {
+          "name": "rubric_exists",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "template_exists",
+          "passed": true,
+          "reason": ""
+        },
+        {
+          "name": "rubric_has_score_scale",
+          "passed": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "small-audit-mode-guidance-exists",
+      "passed_assertions": 1,
+      "total_assertions": 1,
+      "success": true,
+      "details": [
+        {
+          "name": "small_audit_guidance",
+          "passed": true,
+          "reason": ""
+        }
+      ]
+    }
+  ],
+  "key_findings": [
+    "Core references and scaffold script are present and functional.",
+    "Small/time-boxed audit guidance now exists, improving practical usability."
+  ]
+}

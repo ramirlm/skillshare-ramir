@@ -17,8 +17,18 @@ Skill para padronizar e manter metadados em notas Markdown do vault do Obsidian.
     - `title`: derivado do nome do arquivo (stem)
     - `summary`: derivado do conteúdo (primeiro parágrafo útil)
     - `processedAt`: timestamp ISO com timezone (America/Fortaleza)
+    - `owner`: `ramir` (padrão — proprietário do vault)
+    - `people`, `projects`, `related`, `topics`: listas vazias `[]` se ausentes
 - Evita retrabalho:
   - Se `processedAt` existir e o arquivo não foi modificado depois dele (mtime), e `title`/`summary` já existem → pula.
+
+## Política de linking (obrigatória)
+
+Ver `~/clawdbot-agents/main/memory/vault-linking-policy.md`.
+
+- **NUNCA rodar `clawvault link --all`** — causa links espúrios em PT-BR
+- Frontmatter semântico: `people`, `projects`, `related`, `owner: ramir`, `topics`
+- Somente slugs de entidades que existam em `Obsidian/people/`, `Obsidian/projects/`, etc.
 
 ## Como executar (manual)
 

@@ -1,0 +1,24 @@
+{
+  "id": 1,
+  "name": "skill-doc-has-core-governance-workflow",
+  "passed_assertions": 3,
+  "total_assertions": 3,
+  "success": true,
+  "details": [
+    {
+      "name": "mentions_five_axes",
+      "passed": true,
+      "reason": ""
+    },
+    {
+      "name": "mentions_memory_plan",
+      "passed": true,
+      "reason": ""
+    },
+    {
+      "name": "uses_rubric",
+      "passed": true,
+      "reason": ""
+    }
+  ]
+}

@@ -53,7 +53,6 @@ class AIUsageMonitor:
             'codex': ToolConfig('Codex', 200.0, 22, '5h+weekly', 'openai'),
             'copilot': ToolConfig('Copilot', 10.0, 25, 'monthly', 'github'),
             'synthetic': ToolConfig('Synthetic', 20.0, 17, '5h+weekly', 'synthetic'),
-            'warp': ToolConfig('Warp', 20.0, 12, 'monthly', 'warp'),
         }
         
         # Check available APIs
@@ -65,7 +64,6 @@ class AIUsageMonitor:
             'openai': 'OPENAI_API_KEY',
             'github': 'GITHUB_TOKEN',
             'synthetic': 'SYNTHETIC_API_KEY',
-            'warp': 'WARP_API_KEY',
             'cursor': 'CURSOR_API_KEY',
             'copilot': 'COPILOT_API_KEY',
         }

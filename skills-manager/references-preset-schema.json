@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "global": {
+    "enabled": ["obsidian", "github"],
+    "disabled": ["skill-proibida" ]
+  },
+  "machines": {
+    "meu-laptop": {
+      "enabled": ["playwright-auth"],
+      "disabled": []
+    },
+    "servidor-vps": {
+      "enabled": ["healthcheck"],
+      "disabled": ["perplexity"]
+    }
+  },
+  "projects": {
+    "main": {
+      "enabled": ["clawhub", "perplexity", "skill-creator"],
+      "disabled": []
+    },
+    "primo": {
+      "enabled": ["obsidian", "github", "dashboard"],
+      "disabled": ["codi-skill"]
+    }
+  },
+  "skills": {
+    "perplexity": {
+      "type": "path",
+      "path": "~/clawdbot-skills/perplexity"
+    },
+    "skill-da-empresa": {
+      "type": "git",
+      "repo": "https://github.com/you/skill-da-empresa.git",
+      "subdir": "skills/skill-da-empresa",
+      "branch": "main"
+    }
+  }
+}

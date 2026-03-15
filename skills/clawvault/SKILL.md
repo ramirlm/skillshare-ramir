@@ -1,6 +1,6 @@
 ---
 name: clawvault
-version: 2.4.2
+version: 3.3.0
 description: "Agent memory system with memory graph, context profiles, checkpoint/recover, structured storage, semantic search, observational memory, task tracking, canvas dashboards, Obsidian integration, and Tailscale networking. Use when: storing/searching memories, preventing context death, graph-aware context retrieval, repairing broken sessions, tracking tasks, generating dashboards. Don't use when: general file I/O."
 author: Versatly
 repository: https://github.com/Versatly/clawvault

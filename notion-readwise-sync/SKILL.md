@@ -27,6 +27,16 @@ Objetivo: integrar **todo o banco “Library” (Readwise)** que está **aninhad
   - `Knowledge/Readwise/Podcasts/`
   - (Tweets não são gerados)
 
+## Política de linking (obrigatória)
+
+Ver `~/clawdbot-agents/main/memory/vault-linking-policy.md` — regra completa.
+
+**Resumo crítico:**
+- Toda nota deve ter `owner: ramir` e `people: [ramir]` no frontmatter (proprietário do vault)
+- **NUNCA rodar `clawvault link --all`** — causa links espúrios em PT-BR
+- Linking feito exclusivamente via frontmatter (`people`, `projects`, `related`, `owner`, `topics`)
+- Somente slugs reais: verificar se `Obsidian/people/<slug>.md` existe antes de referenciar
+
 ## Como a skill funciona (alto nível)
 1) Descobre/usa a página âncora do Notion (Readwise page) e encontra o **child database “Library”**.
 2) Resolve o **data_source_id** e faz queries por `Category` (exceto Tweets).
@@ -77,6 +87,7 @@ No cron payload, chamar o mesmo script com parâmetros fixos, deixando `--since-
 ## Execução via cron
 Use o runner padrão para automação:
 - `python3 /home/rlmit/clawdbot-skills/notion-readwise-sync/scripts/run_sync.sh`
+- `run_sync.sh` já executa `materialize_ontology_entities.py --canonical --no-wiki` após o sync para manter links semânticos estritos.
 
 Cron ativa criada:
 - Nome: `notion-readwise-sync (hybrid 2x/dia)`

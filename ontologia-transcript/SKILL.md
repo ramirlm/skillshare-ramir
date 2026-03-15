@@ -76,7 +76,7 @@ type: "meeting"
 participants:
   - "<Nome 1>"
   - "<Nome 2>"
-project: "<Projeto>"
+project: "<slug-projeto-ou-null>"
 client: "<Cliente>"
 source: "transcript"
 tags:
@@ -84,7 +84,16 @@ tags:
   - transcript
 processedAt: "<ISO-8601>"
 summary: "<Resumo gerado pelo summarize>"
+owner: ramir
+people: [ramir]
+projects: []
+related: []
+topics: []
 ```
+
+> **Política de linking obrigatória:** Ver `~/clawdbot-agents/main/memory/vault-linking-policy.md`
+> **NUNCA rodar `clawvault link --all`** — usar somente frontmatter com slugs reais.
+> `owner: ramir` é obrigatório em toda nota gerada por esta skill.
 
 **Corpo da nota:**
 - Resumo executivo (do summarize)
