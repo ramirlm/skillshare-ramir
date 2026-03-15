@@ -1,0 +1,24 @@
+{
+  "id": 2,
+  "name": "scaffold-generator-creates-report-template",
+  "passed_assertions": 3,
+  "total_assertions": 3,
+  "success": true,
+  "details": [
+    {
+      "name": "script_exists",
+      "passed": true,
+      "reason": ""
+    },
+    {
+      "name": "generated_report_contains_scope",
+      "passed": true,
+      "reason": ""
+    },
+    {
+      "name": "template_section_memory_plan",
+      "passed": true,
+      "reason": ""
+    }
+  ]
+}

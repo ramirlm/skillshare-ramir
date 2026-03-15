@@ -2,17 +2,7 @@
 name: clawdbot-backup
 description: Backup and restore ClawdBot configuration, skills, commands, and settings. Sync across devices, version control with git, automate backups, and migrate to new machines.
 homepage: https://github.com/clawdbot/backup-skill
-version: 1.0.0
-author: ramirlm
-triggers:
-  - "backup clawdbot"
-  - "restaurar backup"
-  - "sync clawdbot"
-metadata:
-  clawdbot:
-    emoji: "💾"
-    requires:
-      bins: ["git", "tar", "rsync"]
+metadata: {"clawdbot":{"emoji":"💾","requires":{"bins":["git","tar","rsync"],"env":[]}}}
 ---
 
 # ClawdBot Backup Skill

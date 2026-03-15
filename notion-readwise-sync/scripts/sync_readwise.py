@@ -23,6 +23,7 @@ import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+import unicodedata
 
 import urllib.request
 
@@ -45,11 +46,44 @@ def _now_iso() -> str:
 
 
 def slugify(s: str, max_len: int = 120) -> str:
+    # Keep filename-safe slugs with stable behavior.
     s = (s or "").strip().lower()
+    s = unicodedata.normalize("NFKD", s)
+    s = s.encode("ascii", "ignore").decode("ascii")
     s = re.sub(r"[^a-z0-9\s\-_.]+", "", s)
     s = re.sub(r"\s+", "-", s)
     s = re.sub(r"-+", "-", s)
     return s[:max_len].strip("-_") or "untitled"
+
+
+def slug_normalized(value: str, max_len: int = 120) -> str:
+    """Normalize values intended for ontology frontmatter links."""
+    return slugify(value, max_len=max_len)
+
+
+def is_placeholder_value(v: str) -> bool:
+    if not isinstance(v, str):
+        return True
+    clean = v.strip()
+    if not clean:
+        return True
+    lower = clean.lower()
+    return lower in {"todo", "tbd", "to do", "n/a", "na", "none", "null", "untitled", "placeholder"} or lower.startswith("${") or lower.endswith("}")
+
+
+def normalize_name_candidates(items: List[str], max_len: int = 120) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for item in items:
+        normalized = slug_normalized(item, max_len=max_len)
+        if not normalized or is_placeholder_value(normalized):
+            continue
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        out.append(normalized)
+    return out
+
 
 
 def read_notion_key() -> str:
@@ -234,48 +268,139 @@ def compute_relevance(category: str) -> str:
 
 
 def guess_topics(title: str, tags: List[str], summary: str = "", notes: str = "") -> List[str]:
-    kws = set([t.strip() for t in tags if t.strip()])
-    for w in re.findall(r"[A-Za-z][A-Za-z0-9_\-]{4,}", title or ""):
-        kws.add(w)
-    for w in re.findall(r"[A-Za-z][A-Za-z0-9_\-]{4,}", summary or ""):
-        kws.add(w)
-    for w in re.findall(r"[A-Za-z][A-Za-z0-9_\-]{4,}", notes or ""):
-        kws.add(w)
-    return sorted(kws)[:24]
+    kws = set(normalize_name_candidates(tags))
+    for w in re.findall(r"[A-Za-z][A-Za-z0-9_\-]{2,}", title or ""):
+        kws.add(slug_normalized(w))
+    for w in re.findall(r"[A-Za-z][A-Za-z0-9_\-]{2,}", summary or ""):
+        kws.add(slug_normalized(w))
+    for w in re.findall(r"[A-Za-z][A-Za-z0-9_\-]{2,}", notes or ""):
+        kws.add(slug_normalized(w))
+    return sorted([k for k in kws if k])[:24]
+
+
+
+
+def discover_vault_entities(vault: Path) -> dict:
+    """Load existing canonical entities so we keep only resolvable ontology references."""
+
+    def _index(folder: str) -> set:
+        p = vault / folder
+        values: set = set()
+        if not p.exists():
+            return values
+        for file in p.glob("*.md"):
+            stem = file.stem
+            # Keep both raw stem and normalized slug for resilience.
+            values.add(stem)
+            values.add(slug_normalized(stem))
+        return values
+
+    people = _index("people")
+    projects = _index("projects")
+    topics = _index("topics")
+    lesson = _index("lesson")
+    topics.update(lesson)
+    return {"people": people, "projects": projects, "topics": topics}
+
+
+def clamp_ontology_values(values, allowed: set) -> list:
+    """Return unique ordered values that exist in allowed entity index."""
+    out = []
+    seen = set()
+    for v in values:
+        if v is None:
+            continue
+        normalized = slug_normalized(str(v).strip())
+        if not normalized or is_placeholder_value(normalized) or normalized in seen:
+            continue
+        if normalized in allowed:
+            out.append(normalized)
+            seen.add(normalized)
+    return out
+
+
+def resolve_existing_path_by_notion_id(vault: Path, notion_id: str) -> Path | None:
+    base_dir = vault / "Knowledge" / "Readwise"
+    matches = sorted(base_dir.rglob(f"*__{notion_id}.md"))
+    return matches[0] if matches else None
+
+
+def file_path_for(vault: Path, category: str, notion_id: str, title: str, existing: Path | None = None) -> Path:
+    base_dir = vault / "Knowledge" / "Readwise"
+    canonical = base_dir / CATEGORY_MAP[category] / f"{slugify(title)}__{notion_id}.md"
+    if existing:
+        return existing if existing.exists() else canonical
+    return canonical
+
+
+def ensure_within_vault(vault: Path, candidate: Path) -> Path:
+    vault_root = vault.resolve()
+    target = candidate.resolve()
+    if vault_root not in target.parents and target != vault_root:
+        raise RuntimeError(f"unsafe target outside vault: {candidate}")
+    return target
+
+
+def write_within_vault(path: Path, vault: Path, content: str) -> None:
+    safe = ensure_within_vault(vault, path)
+    safe.parent.mkdir(parents=True, exist_ok=True)
+    safe.write_text(content, encoding="utf-8")
+
+
+def parse_author_names(author: str) -> List[str]:
+    author = (author or "").strip()
+    if not author:
+        return []
+
+    stopwords = {"and", "the", "with", "for", "para", "sobre", "de"}
+    parts = re.split(r"[;,/]|\band\b", author, flags=re.IGNORECASE)
+    result: List[str] = []
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+        cleaned = part.replace("…", "")
+        low = cleaned.lower()
+        if low in stopwords:
+            continue
+        slug = slug_normalized(cleaned)
+        if slug:
+            result.append(slug)
+    return sorted(set(result))
 
 
 def infer_ontology_candidates(title: str, summary: str, source_url: str, author: str, tags: List[str], category: str) -> dict:
-    people = []
-    companies = []
-    projects = []
-    topics = set([x for x in (tags or []) if x])
+    tag_slugs = normalize_name_candidates(tags)
+    people = parse_author_names(author)
+    projects: List[str] = []
+    companies: List[str] = []
+    inferred = set(tag_slugs)
 
-    # Heuristic candidates from common signals
-    for token in re.split(r"\s+", (author or "").strip()):
-        if token and token.lower() not in {"and", "the", "with", "for", "para", "sobre", "de"}:
-            people.append(token)
+    # Heuristic candidates from title/summary (slugized)
+    inferred.update(guess_topics(title, tag_slugs, summary, summary))
 
     if source_url:
         if "twitter.com" in source_url or "x.com" in source_url:
-            topics.add("social-media")
+            inferred.add("social-media")
         if "youtube.com" in source_url or "youtu.be" in source_url:
-            topics.add("video")
+            inferred.add("video")
     if category == "Books":
-        topics.add("book")
+        inferred.add("book")
     if category == "PDFs":
-        topics.add("pdf")
+        inferred.add("pdf")
     if category == "Videos":
-        topics.add("video")
+        inferred.add("video")
 
-    title_slug = (title or "").lower()
+    title_slug = slug_normalized(title)
     if "gpt" in title_slug or "openai" in title_slug:
-        topics.add("ai")
+        inferred.add("ai")
 
     return {
-        "topics": sorted({t for t in topics if t}),
-        "people_candidates": sorted({x for x in people if x}),
-        "company_candidates": sorted({x for x in companies if x}),
-        "project_candidates": sorted({x for x in projects if x}),
+        "topics": sorted({t for t in inferred if t}),
+        "related": sorted({t for t in inferred if t}),
+        "people_candidates": people,
+        "company_candidates": sorted(set(companies)),
+        "project_candidates": sorted(set(projects)),
     }
 
 
@@ -324,9 +449,11 @@ def build_body(page: dict, fm: Dict[str, Any], title: str, category: str, summar
 
     if category in ("Books", "PDFs", "Videos"):
         body_parts.append("## Resumo\n")
-        body_parts.append((md_escape(summary) if summary else "(preencher)") + "\n\n")
-        body_parts.append("## Insights\n- (preencher)\n\n")
-        body_parts.append("## Aplicações\n- (preencher)\n\n")
+        body_parts.append((md_escape(summary) if summary else "") + "\n\n")
+        body_parts.append("## Insights\n")
+        body_parts.append("- \n\n")
+        body_parts.append("## Aplicações\n")
+        body_parts.append("- \n\n")
 
     if notes:
         body_parts.append("## Notas (Readwise)\n")
@@ -341,10 +468,6 @@ def build_body(page: dict, fm: Dict[str, Any], title: str, category: str, summar
 
     return "".join(body_parts)
 
-
-def file_path_for(vault: Path, category: str, notion_id: str, title: str) -> Path:
-    base_dir = vault / "Knowledge" / "Readwise"
-    return base_dir / CATEGORY_MAP[category] / f"{slugify(title)}__{notion_id}.md"
 
 
 def parse_iso_bool(v: str) -> bool:
@@ -431,6 +554,7 @@ def main() -> int:
     skipped: list = []
     diffs: list = []
     ontology_events: list = []
+    entity_index = discover_vault_entities(vault)
 
     since_cutoff = None if args.since_days is None or args.since_days <= 0 else dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=args.since_days)
 
@@ -481,6 +605,18 @@ def main() -> int:
                 ontology = infer_ontology_candidates(title, summary, source_url or "", author or "", tags, category)
                 relevance = compute_relevance(category)
 
+                # Keep only semantic references that point to real entities in this vault.
+                existing = entity_index
+                related_tags = normalize_name_candidates(tags)
+                if not related_tags:
+                    related_tags = ontology["related"][:20]
+                # "related" should represent canonical theme/tag links.
+                related_tags = clamp_ontology_values(related_tags, existing.get("topics", set()))
+
+                people = clamp_ontology_values(normalize_name_candidates(ontology["people_candidates"]), existing.get("people", set()))
+                projects = clamp_ontology_values(normalize_name_candidates(ontology["project_candidates"]), existing.get("projects", set()))
+                topics = clamp_ontology_values(topics, existing.get("topics", set()))
+
                 prev_entry = index_prev.get(pid)
                 prev_hash = prev_entry.get("content_hash") if isinstance(prev_entry, dict) else None
                 prev_updated_at = prev_entry.get("updated_at") if isinstance(prev_entry, dict) else None
@@ -492,22 +628,40 @@ def main() -> int:
                     "notion_url": notion_url,
                     "category": category,
                     "source_url": source_url,
-                    "tags": tags,
+                    "tags": related_tags,
                     "author": author or None,
                     "highlights": highlights,
                     "last_synced": last_synced,
                     "relevance": relevance,
-                    "topics": topics,
-                    "people": ontology["people_candidates"],
-                    "companies": ontology["company_candidates"],
-                    "projects": ontology["project_candidates"],
+                    "topics": normalize_name_candidates(topics),
+                    "related": related_tags,
+                    "people": people,
+                    "projects": projects,
+                    "project": projects[0] if projects else None,
+                    "owner": people[0] if people else None,
                     "status": "curated",
                     "curated_at": last_synced or prev_updated_at or _now_iso(),
                 }
 
                 # Use stable curated_at to prevent false updates when content unchanged.
+                # Use stable curated_at to prevent false updates when content unchanged.
                 body = build_body(page, fm, title, category, summary, notes, source_url, author, last_synced)
-                out_path = file_path_for(vault, category, pid, title)
+                existing_path = resolve_existing_path_by_notion_id(base_dir, pid)
+                out_path = file_path_for(vault, category, pid, title, existing=existing_path)
+
+                # Consolidar semântico por notion_page_id (renomeação/categoria ajustada)
+                did_consolidate = False
+                if existing_path and existing_path.resolve() != out_path.resolve():
+                    did_consolidate = True
+                    if not out_path.exists():
+                        safe_source = ensure_within_vault(vault, existing_path)
+                        out_path = ensure_within_vault(vault, out_path)
+                        safe_source.replace(out_path)
+                    else:
+                        out_path = ensure_within_vault(vault, out_path)
+                else:
+                    out_path = ensure_within_vault(vault, out_path)
+
                 current_content = "---\n" + "\n".join(["{}: {}".format(k, yaml_kv(v)) for k, v in fm.items()]) + "\n---\n\n" + body
                 curr_hash = sha256_text(current_content)
 
@@ -517,6 +671,7 @@ def main() -> int:
                     "category": category,
                     "vault_path": str(out_path.relative_to(vault)),
                     "notion_url": notion_url,
+                    "consolidated": did_consolidate,
                 }
 
                 if args.dry_run:
@@ -526,14 +681,12 @@ def main() -> int:
 
 
                 if prev_hash is None or not out_path.exists():
-                    out_path.parent.mkdir(parents=True, exist_ok=True)
-                    out_path.write_text(current_content, encoding="utf-8")
+                    write_within_vault(out_path, vault, current_content)
                     run_meta["stats"]["added"] += 1
                     added.append(rel)
                 else:
                     prev_content = out_path.read_text(encoding="utf-8") if out_path.exists() else ""
                     if sha256_text(prev_content) == curr_hash:
-                        run_meta["stats"]["written"] = run_meta["stats"].get("written", 0) + 0
                         unchanged.append(rel)
                     else:
                         before_lines = prev_content.splitlines()
@@ -544,10 +697,9 @@ def main() -> int:
                             "path": str(out_path.relative_to(vault)),
                             "patch": patch,
                         })
-                        out_path.write_text(current_content, encoding="utf-8")
+                        write_within_vault(out_path, vault, current_content)
                         run_meta["stats"]["updated"] += 1
                         updated.append(rel)
-
                 if do_ontology:
                     cand = {
                         "notion_page_id": pid,
@@ -555,11 +707,13 @@ def main() -> int:
                         "title": title,
                         "category": category,
                         "source_url": source_url,
-                        "topics": topics,
-                        "people_candidates": ontology["people_candidates"],
+                        "topics": normalize_name_candidates(topics),
+                        "related": ontology.get("related", []),
+                        "people_candidates": people,
                         "company_candidates": ontology["company_candidates"],
-                        "project_candidates": ontology["project_candidates"],
+                        "project_candidates": projects,
                         "relevance": relevance,
+                        "owner": fm["owner"],
                         "generated_at": fm["curated_at"],
                     }
                     if not args.dry_run:

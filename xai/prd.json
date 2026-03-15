@@ -1,0 +1,154 @@
+{
+  "project": "clawdbot-skills",
+  "branchName": "codi/consolidate-xai-skills",
+  "description": "Consolidate xai-search features into xai skill and prepare for xai-search removal",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Enhance search-x.js with advanced handle filters",
+      "description": "As a user searching X/Twitter, I want to exclude specific handles so that I can filter out spam/bot accounts from results",
+      "acceptanceCriteria": [
+        "Add --allowed-handles flag (alias for --handles)",
+        "Add --excluded-handles flag to exclude specific handles",
+        "Update parseArgs() to handle new flags",
+        "Update API request to include excluded_x_handles filter",
+        "Backward compatibility: existing --handles flag still works",
+        "Help text updated with new flags and examples",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "File: ~/clawdbot-skills/xai/scripts/search-x.js"
+    },
+    {
+      "id": "US-002",
+      "title": "Add flexible date filtering to search-x.js",
+      "description": "As a user, I want to specify exact date ranges (from/to) so that I can search specific time periods beyond 'last N days'",
+      "acceptanceCriteria": [
+        "Add --from-date flag accepting ISO 8601 format (YYYY-MM-DD)",
+        "Add --to-date flag accepting ISO 8601 format",
+        "Validate date formats (basic validation)",
+        "Update API request to include from_date and to_date filters",
+        "When --days is used without --from-date, calculate from_date automatically",
+        "--from-date and --to-date can be used independently or together",
+        "Help text updated with date examples",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "File: ~/clawdbot-skills/xai/scripts/search-x.js"
+    },
+    {
+      "id": "US-003",
+      "title": "Add media analysis flags to search-x.js",
+      "description": "As a user, I want to enable image/video understanding so that Grok can analyze visual content in tweets",
+      "acceptanceCriteria": [
+        "Add --image-understanding boolean flag",
+        "Add --video-understanding boolean flag",
+        "Update API request to include enable_image_understanding when flag present",
+        "Update API request to include enable_video_understanding when flag present",
+        "Flags work independently or together",
+        "Help text updated with media analysis examples",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "File: ~/clawdbot-skills/xai/scripts/search-x.js"
+    },
+    {
+      "id": "US-004",
+      "title": "Create web-search.js script",
+      "description": "As a user, I want to search the web using Grok's web_search tool so that I can find documentation and articles beyond X/Twitter",
+      "acceptanceCriteria": [
+        "Create new file ~/clawdbot-skills/xai/scripts/web-search.js",
+        "Script structure similar to chat.js (reuse API boilerplate)",
+        "Support --domains flag to filter by specific domains",
+        "Support --exclude-domains flag to exclude specific domains",
+        "Support --image-understanding flag for web page images",
+        "Support --max-results flag to limit number of results",
+        "Use web_search tool (not x_search)",
+        "Include help text with examples",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "New file, based on chat.js structure"
+    },
+    {
+      "id": "US-005",
+      "title": "Update xai SKILL.md documentation",
+      "description": "As a skill user, I want comprehensive documentation so that I know about all available features",
+      "acceptanceCriteria": [
+        "Document all new search-x.js flags with examples",
+        "Add web-search.js section with usage examples",
+        "Add note that xai now replaces xai-search functionality",
+        "Update triggers to include web search keywords",
+        "Add advanced search examples combining multiple filters",
+        "Maintain existing documentation for chat.js and models.js",
+        "Markdown formatting is correct",
+        "All code examples are accurate"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "File: ~/clawdbot-skills/xai/SKILL.md"
+    },
+    {
+      "id": "US-006",
+      "title": "Update xai README.md",
+      "description": "As a developer installing the skill, I want updated README so that I know about web search capabilities",
+      "acceptanceCriteria": [
+        "Add web search section to README",
+        "Update examples with advanced search-x.js usage",
+        "Add installation/usage for web-search.js",
+        "Update feature list to include web search",
+        "Mention xai-search deprecation (if applicable)",
+        "Markdown formatting is correct"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "File: ~/clawdbot-skills/xai/README.md"
+    },
+    {
+      "id": "US-007",
+      "title": "Add smoke tests for enhanced features",
+      "description": "As a maintainer, I want basic tests so that I can verify new features work correctly",
+      "acceptanceCriteria": [
+        "Create test script or document test cases",
+        "Test each new flag individually (excluded-handles, from-date, etc.)",
+        "Test flag combinations (e.g., --handles + --from-date + --image-understanding)",
+        "Test backward compatibility (old commands still work)",
+        "Test web-search.js basic functionality",
+        "Document any edge cases or known limitations",
+        "All tests pass"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Can be manual test checklist or simple test script"
+    }
+  ],
+  "technicalNotes": {
+    "skillLocation": "~/clawdbot-skills/xai/",
+    "apiDocs": "https://docs.x.ai/api",
+    "dependencies": "None (vanilla Node.js)",
+    "compatibility": "Must maintain backward compatibility with existing search-x.js usage",
+    "references": [
+      "xai-search SKILL.md for filter specifications",
+      "Existing chat.js for API boilerplate patterns",
+      "search-x.js current implementation"
+    ]
+  },
+  "outOfScope": [
+    "Removing xai-search skill (separate task after validation)",
+    "Modifying x-api skill",
+    "Advanced search result ranking/sorting (if not supported by API)",
+    "Combined search script (x_search + web_search in one call - future enhancement)"
+  ],
+  "definition_of_done": [
+    "All user stories pass acceptance criteria",
+    "Typecheck passes for all modified/new files",
+    "Backward compatibility verified",
+    "Documentation (SKILL.md + README.md) updated",
+    "Smoke tests pass",
+    "No breaking changes to existing scripts"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": 4,
+  "name": "small-audit-mode-guidance-exists",
+  "passed_assertions": 1,
+  "total_assertions": 1,
+  "success": true,
+  "details": [
+    {
+      "name": "small_audit_guidance",
+      "passed": true,
+      "reason": ""
+    }
+  ]
+}

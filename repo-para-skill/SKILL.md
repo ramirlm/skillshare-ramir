@@ -1,16 +1,6 @@
 ---
 name: repo-para-skill
 description: Convert any public GitHub repository into a reusable Clawdbot skill by cloning source, extracting architecture and usage signals, and generating structured references so future interactions can work with that repo as a codified skill.
-version: 1.0.0
-author: ramirlm
-triggers:
-  - "converter repo para skill"
-  - "repo to skill"
-  - "criar skill do repositório"
-metadata:
-  clawdbot:
-    emoji: "🔨"
-    os: ["linux", "darwin", "windows"]
 ---
 
 # repo-para-skill

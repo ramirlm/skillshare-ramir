@@ -1,19 +1,6 @@
 ---
 name: evangelho-do-dia-ptbr
 description: Buscar o Evangelho do dia em PT-BR (com opcional reflexão) usando evangeli.net, por data (YYYY-MM-DD) ou hoje. Use quando o usuário pedir "evangelho do dia", "liturgia diária" (evangelho), "evangelho de hoje" ou quando precisar extrair o texto do Evangelho e/ou a reflexão para copiar, enviar, ou salvar.
-version: 1.0.0
-author: ramirlm
-triggers:
-  - "evangelho do dia"
-  - "liturgia diária"
-  - "evangelho de hoje"
-  - "gospel today"
-metadata:
-  clawdbot:
-    emoji: "✝️"
-    os: ["linux", "darwin", "windows"]
-    requires:
-      bins: ["python3"]
 ---
 
 # Evangelho do dia (PT-BR) — evangeli.net
@@ -49,10 +36,3 @@ metadata:
 
 - Detalhes da fonte/HTML em: `references/sources.md`
 - Se o parser quebrar, ajustar regex/recortes em `scripts/fetch_evangelho.py`.
-
-## Tratamento de Erros
-
-- **Site indisponível**: Informar ao usuário que o site evangeli.net não está acessível e sugerir tentar novamente mais tarde
-- **Data inválida**: Validar o formato (YYYY-MM-DD) e informar se a data está no futuro ou muito no passado
-- **Parser quebrou** (mudança no HTML do site): Registrar o erro, retornar o HTML bruto e orientar a ajustar o regex em `scripts/fetch_evangelho.py`
-- **Sem conexão com internet**: Verificar se há cache local e, se houver, retornar o conteúdo cacheado com aviso

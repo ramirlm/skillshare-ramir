@@ -1,19 +1,6 @@
 ---
 name: youtube-transcript
 description: Fetch and summarize YouTube video transcripts. Use when asked to summarize, transcribe, or extract content from YouTube videos. Handles transcript fetching via residential IP proxy to bypass YouTube's cloud IP blocks.
-version: 1.0.0
-author: ramirlm
-triggers:
-  - "transcrição youtube"
-  - "youtube transcript"
-  - "resumir vídeo"
-  - "extrair legenda"
-metadata:
-  clawdbot:
-    emoji: "🎬"
-    os: ["linux", "darwin", "windows"]
-    requires:
-      bins: ["python3"]
 ---
 
 # YouTube Transcript
@@ -55,11 +42,3 @@ See [references/SETUP.md](references/SETUP.md) for:
 - WireGuard VPN configuration (required for cloud VPS)
 - Troubleshooting common errors
 - Alternative proxy options
-
-## Tratamento de Erros
-
-- **Vídeo sem legenda disponível**: Informar ao usuário e oferecer alternativas (ex.: buscar transcrição manual, usar áudio)
-- **URL inválida**: Validar o formato da URL do YouTube antes de fazer a requisição
-- **IP bloqueado pelo YouTube**: Verificar se o proxy residencial está configurado e ativo; orientar a verificar `VPN_HOST` ou `PROXY_URL`
-- **Transcrição muito longa** (> 100k tokens): Informar o tamanho e oferecer resumo por seções ao invés de transcrição completa
-- **Legenda em idioma diferente do esperado**: Informar o idioma detectado e perguntar se deve prosseguir com tradução ou buscar outra legenda

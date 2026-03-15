@@ -1,20 +1,6 @@
 ---
 name: todo-list-manager
 description: "Agente especializado em gerenciar listas de tarefas (TODO) organizadas por áreas de vida prioritárias. Use quando: (1) Adicionar tarefas, (2) Consultar pendências, (3) Organizar prioridades, (4) Marcar eventos no calendário, (5) Precisar de visão geral dos compromissos. Organiza por: 1-Deus/Igreja, 2-Família, 3-Trabalho, 4-Casa, 5-Lazer."
-version: 1.1.0
-author: ramirlm
-triggers:
-  - "TODO"
-  - "adicionar tarefa"
-  - "pendências"
-  - "o que tenho hoje"
-  - "tarefas urgentes"
-  - "planejar semana"
-  - "revisão semanal"
-metadata:
-  clawdbot:
-    emoji: "✅"
-    os: ["linux", "darwin", "windows"]
 ---
 
 # TODO List Manager - Organizador de Tarefas por Prioridades
@@ -76,9 +62,7 @@ As tarefas são organizadas em 5 áreas de vida, **SEMPRE nesta ordem de priorid
 
 ## Estrutura de Armazenamento
 
-### Arquivo Principal: `[VAULT]/TODO/main-todo.md`
-
-> O caminho padrão do vault é `~/Obsidian`. Se o vault estiver em outro local, use o configurado em `CLAWVAULT_PATH` ou `TODO_VAULT_PATH`.
+### Arquivo Principal: `/home/rlmit/clawdmold/TODO/main-todo.md`
 
 ```markdown
 # TODO List - Ramir
@@ -115,7 +99,7 @@ As tarefas são organizadas em 5 áreas de vida, **SEMPRE nesta ordem de priorid
 - [x] Tarefa concluída 2 (concluída em 2024-01-14)
 ```
 
-### Arquivos de Histórico: `[VAULT]/TODO/historico/AAAA-MM.md`
+### Arquivos de Histórico: `/home/rlmit/clawdmold/TODO/historico/AAAA-MM.md`
 
 Tarefas concluídas são arquivadas mensalmente.
 
@@ -377,16 +361,3 @@ Destaques:
 6. **Arquivar histórico mensalmente**
 7. **Integrar com calendário para tarefas com horário/data específicos**
 8. **Ser proativo mas não invasivo** nos lembretes
-
-## Tratamento de Erros
-
-- **Arquivo TODO não encontrado**: Oferecer criar o arquivo `main-todo.md` com a estrutura padrão vazia
-- **Categoria não reconhecida**: Listar as 5 categorias disponíveis (P1-P5) e pedir ao usuário para escolher
-- **Conflito de agenda**: Se o novo evento conflitar com um existente, alertar antes de criar
-- **Integração com calendário falhou**: Salvar a tarefa no TODO local e orientar o usuário a criar o evento manualmente
-- **Tarefa não encontrada para completar**: Sugerir as tarefas mais similares pelo nome e pedir confirmação
-
-## Segurança
-
-- Não compartilhar o conteúdo do TODO externamente sem confirmação do usuário
-- Ao exibir tarefas em canais de grupo (Telegram, etc.), perguntar se o usuário quer um resumo genérico ao invés do conteúdo completo

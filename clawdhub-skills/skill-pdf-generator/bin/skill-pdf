@@ -1,0 +1,361 @@
+#!/bin/bash
+
+# skill-pdf - PDF generator for Markdown and OpenClaw skills inventory
+# Usage: skill-pdf <command> [options]
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Show usage
+show_usage() {
+    cat << EOF
+📄 skill-pdf - PDF Generator for Markdown and Skills Inventory
+
+Usage:
+  skill-pdf <command> [options]
+
+Commands:
+  generate    Convert Markdown/HTML to PDF
+  skills      Generate PDF inventory of OpenClaw skills
+
+Options for 'generate':
+  -i, --input <file>     Input file (Markdown or HTML)
+  -o, --output <file>    Output PDF file
+  -t, --title <title>    Document title (optional)
+  -a, --author <author>  Document author (optional)
+  -h, --help             Show this help
+
+Options for 'skills':
+  -o, --output <file>    Output file (default: skills-report.pdf)
+  -f, --format <format>  Output format: pdf or markdown (default: pdf)
+  -h, --help             Show this help
+
+Examples:
+  skill-pdf generate -i document.md -o document.pdf
+  skill-pdf generate --input README.md --output README.pdf --title "My Project"
+  skill-pdf skills --output my-skills.pdf
+  skill-pdf skills -f markdown -o skills.md
+
+EOF
+}
+
+# Print error and exit
+error() {
+    echo -e "${RED}Error: $1${NC}" >&2
+    exit 1
+}
+
+# Print warning
+warn() {
+    echo -e "${YELLOW}Warning: $1${NC}" >&2
+}
+
+# Print info
+info() {
+    echo -e "${BLUE}Info: $1${NC}"
+}
+
+# Print success
+success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+# Check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Check dependencies
+check_pandoc() {
+    if ! command_exists pandoc; then
+        error "pandoc is not installed. Please install it:\n  Ubuntu/Debian: sudo apt-get install pandoc\n  macOS: brew install pandoc"
+    fi
+}
+
+# Check wkhtmltopdf (optional)
+check_wkhtmltopdf() {
+    command_exists wkhtmltopdf
+}
+
+# Convert Markdown to PDF using pandoc
+convert_with_pandoc() {
+    local input_file="$1"
+    local output_file="$2"
+    local title="${3:-}"
+    local author="${4:-}"
+
+    info "Converting with pandoc..."
+
+    local pandoc_opts="-f markdown -t pdf -o \"$output_file\""
+
+    # Add metadata if provided
+    if [[ -n "$title" ]]; then
+        pandoc_opts="$pandoc_opts --metadata=title:\"$title\""
+    fi
+
+    if [[ -n "$author" ]]; then
+        pandoc_opts="$pandoc_opts --metadata=author:\"$author\""
+    fi
+
+    # Try pandoc with PDF engine
+    if command_exists xelatex; then
+        pandoc_opts="$pandoc_opts --pdf-engine=xelatex"
+    elif command_exists pdflatex; then
+        pandoc_opts="$pandoc_opts --pdf-engine=pdflatex"
+    fi
+
+    eval pandoc "$pandoc_opts" "$input_file"
+}
+
+# Fallback: Convert using wkhtmltopdf
+convert_with_wkhtmltopdf() {
+    local input_file="$1"
+    local output_file="$2"
+
+    info "Falling back to wkhtmltopdf..."
+
+    # Convert markdown to HTML first
+    local temp_html=$(mktemp --suffix=.html)
+
+    if [[ "$input_file" == *.md || "$input_file" == *.markdown ]]; then
+        pandoc -f markdown -t html -o "$temp_html" "$input_file"
+    else
+        cp "$input_file" "$temp_html"
+    fi
+
+    # Convert HTML to PDF
+    wkhtmltopdf --encoding utf-8 --page-size A4 --margin-top 10mm --margin-bottom 10mm \
+        --margin-left 10mm --margin-right 10mm "$temp_html" "$output_file"
+
+    rm -f "$temp_html"
+}
+
+# Generate command: Convert file to PDF
+cmd_generate() {
+    local input_file=""
+    local output_file=""
+    local title=""
+    local author=""
+
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -i|--input)
+                input_file="$2"
+                shift 2
+                ;;
+            -o|--output)
+                output_file="$2"
+                shift 2
+                ;;
+            -t|--title)
+                title="$2"
+                shift 2
+                ;;
+            -a|--author)
+                author="$2"
+                shift 2
+                ;;
+            -h|--help)
+                show_usage
+                exit 0
+                ;;
+            *)
+                error "Unknown option: $1"
+                ;;
+        esac
+    done
+
+    # Validate required arguments
+    if [[ -z "$input_file" ]]; then
+        error "Input file is required. Use -i or --input"
+    fi
+
+    if [[ -z "$output_file" ]]; then
+        error "Output file is required. Use -o or --output"
+    fi
+
+    # Check if input file exists
+    if [[ ! -f "$input_file" ]]; then
+        error "Input file not found: $input_file"
+    fi
+
+    # Check pandoc
+    check_pandoc
+
+    # Convert
+    info "Converting '$input_file' to '$output_file'..."
+
+    if convert_with_pandoc "$input_file" "$output_file" "$title" "$author"; then
+        success "PDF generated: $output_file"
+    else
+        warn "Pandoc failed, trying fallback..."
+        if check_wkhtmltopdf; then
+            if convert_with_wkhtmltopdf "$input_file" "$output_file"; then
+                success "PDF generated using fallback: $output_file"
+            else
+                error "Failed to generate PDF"
+            fi
+        else
+            error "Pandoc failed and wkhtmltopdf is not available"
+        fi
+    fi
+}
+
+# Get skills list from openclaw
+get_skills_json() {
+    if ! command_exists openclaw; then
+        error "openclaw CLI not found. Cannot fetch skills list."
+    fi
+
+    openclaw skills list --json 2>/dev/null || echo "[]"
+}
+
+# Generate Markdown table from skills JSON
+generate_skills_markdown() {
+    local json_data="$1"
+
+    cat << 'EOF'
+# OpenClaw Skills Inventory
+
+Generated: 
+EOF
+    echo "$(date '+%Y-%m-%d %H:%M:%S')"
+    cat << 'EOF'
+
+| Name | Description | Examples | Location |
+|------|-------------|----------|----------|
+EOF
+
+    # Parse JSON and generate table rows
+    echo "$json_data" | jq -r '.[] | "| \(.name // "N/A") | \(.description // "N/A" | gsub("[\n\r]"; " ") | .[0:80]) | \(.examples // "N/A" | gsub("[\n\r]"; " ") | .[0:50]) | \(.location // "N/A") |"' 2>/dev/null || true
+}
+
+# Skills command: Generate skills inventory PDF
+cmd_skills() {
+    local output_file="skills-report.pdf"
+    local format="pdf"
+
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -o|--output)
+                output_file="$2"
+                shift 2
+                ;;
+            -f|--format)
+                format="$2"
+                shift 2
+                ;;
+            -h|--help)
+                cat << EOF
+Usage: skill-pdf skills [options]
+
+Generate PDF inventory of OpenClaw skills
+
+Options:
+  -o, --output <file>    Output file (default: skills-report.pdf)
+  -f, --format <format>  Output format: pdf or markdown (default: pdf)
+  -h, --help             Show this help
+
+Examples:
+  skill-pdf skills --output my-skills.pdf
+  skill-pdf skills -f markdown -o skills.md
+EOF
+                exit 0
+                ;;
+            *)
+                error "Unknown option: $1"
+                ;;
+        esac
+    done
+
+    info "Fetching skills list from OpenClaw..."
+
+    # Get skills JSON
+    local skills_json
+    skills_json=$(get_skills_json)
+
+    if [[ -z "$skills_json" || "$skills_json" == "[]" ]]; then
+        warn "No skills found or empty response from openclaw"
+        skills_json="[]"
+    fi
+
+    # Generate Markdown
+    local markdown_content
+    markdown_content=$(generate_skills_markdown "$skills_json")
+
+    # Output based on format
+    if [[ "$format" == "markdown" ]]; then
+        echo "$markdown_content" > "$output_file"
+        success "Markdown saved: $output_file"
+    else
+        # Convert to PDF
+        local temp_md=$(mktemp --suffix=.md)
+        echo "$markdown_content" > "$temp_md"
+
+        check_pandoc
+
+        info "Converting to PDF..."
+        if pandoc -f markdown -t pdf -o "$output_file" "$temp_md"; then
+            success "Skills report generated: $output_file"
+        else
+            warn "Pandoc failed, trying fallback..."
+            if check_wkhtmltopdf; then
+                local temp_html=$(mktemp --suffix=.html)
+                pandoc -f markdown -t html -o "$temp_html" "$temp_md"
+                wkhtmltopdf --encoding utf-8 --page-size A4 \
+                    --margin-top 10mm --margin-bottom 10mm \
+                    --margin-left 10mm --margin-right 10mm \
+                    "$temp_html" "$output_file"
+                rm -f "$temp_html"
+                success "Skills report generated using fallback: $output_file"
+            else
+                rm -f "$temp_md"
+                error "Failed to generate PDF"
+            fi
+        fi
+
+        rm -f "$temp_md"
+    fi
+}
+
+# Main entry point
+main() {
+    if [[ $# -eq 0 ]]; then
+        show_usage
+        exit 1
+    fi
+
+    local command="$1"
+    shift
+
+    case "$command" in
+        generate)
+            cmd_generate "$@"
+            ;;
+        skills)
+            cmd_skills "$@"
+            ;;
+        -h|--help|help)
+            show_usage
+            exit 0
+            ;;
+        *)
+            error "Unknown command: $command\nRun 'skill-pdf --help' for usage information."
+            ;;
+    esac
+}
+
+# Run main function
+main "$@"

@@ -1,16 +1,6 @@
 ---
 name: self-improvement
 description: "Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude, (3) User requests a capability that doesn't exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated, (6) A better approach is discovered for a recurring task."
-version: 1.0.0
-triggers:
-  - "registrar aprendizado"
-  - "log correction"
-  - "save learning"
-  - "improve skill"
-metadata:
-  clawdbot:
-    emoji: "🧠"
-    os: ["linux", "darwin", "windows"]
 ---
 
 # Self-Improvement Skill
@@ -560,9 +550,3 @@ When using both:
 3. Sync high-value learnings to both systems
 
 See `references/clawdbot-integration.md` for complete setup, promotion formats, and troubleshooting.
-
-## Segurança
-
-- **Nunca registrar segredos**: Se um log de erro contiver tokens, senhas ou API keys, redatar antes de salvar
-- **Arquivos de aprendizado são artefatos do projeto**: Não incluir dados pessoais ou informações confidenciais de clientes nos logs de aprendizado
-- **Revisão humana**: Antes de promover um aprendizado para `MEMORY.md` ou `AGENTS.md`, confirmar com o usuário que o conteúdo está correto e seguro

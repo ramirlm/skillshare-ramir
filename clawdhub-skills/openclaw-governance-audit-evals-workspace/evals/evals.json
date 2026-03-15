@@ -1,0 +1,93 @@
+{
+  "skill_name": "openclaw-governance-audit",
+  "version": "0.1.0",
+  "evals": [
+    {
+      "id": 1,
+      "name": "skill-doc-has-core-governance-workflow",
+      "prompt": "Read the skill and verify it defines scope framing, five audit axes, evidence-first scoring, and a mandatory memory management improvement plan.",
+      "expected_output": "The skill explicitly guides a governance audit end-to-end and names all five axes.",
+      "assertions": [
+        {
+          "name": "mentions_five_axes",
+          "type": "file_contains",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/SKILL.md",
+          "content": "Audit OpenClaw in five axes"
+        },
+        {
+          "name": "mentions_memory_plan",
+          "type": "file_contains",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/SKILL.md",
+          "content": "Memory Management Improvement Plan"
+        },
+        {
+          "name": "uses_rubric",
+          "type": "file_contains",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/SKILL.md",
+          "content": "Use the rubric in `references/audit-rubric.md`"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "scaffold-generator-creates-report-template",
+      "prompt": "Use mktemp -d, run scripts/generate_audit_scaffold.py with a temporary output path, and verify the report contains the required sections.",
+      "expected_output": "A markdown scaffold is created with Scope, Scorecard, Findings by Axis, and Memory Management Improvement Plan sections.",
+      "assertions": [
+        {
+          "name": "script_exists",
+          "type": "file_exists",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/scripts/generate_audit_scaffold.py"
+        },
+        {
+          "name": "generated_report_contains_scope",
+          "type": "output_contains",
+          "content": "generated scaffold successfully"
+        },
+        {
+          "name": "template_section_memory_plan",
+          "type": "output_contains",
+          "content": "Memory Management Improvement Plan"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "references-cover-scoring-and-reporting",
+      "prompt": "Verify the references directory contains a rubric with scoring guidance and a report template with all audit sections.",
+      "expected_output": "The skill ships both a rubric and report template sufficient for a first audit pass.",
+      "assertions": [
+        {
+          "name": "rubric_exists",
+          "type": "file_exists",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/references/audit-rubric.md"
+        },
+        {
+          "name": "template_exists",
+          "type": "file_exists",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/references/report-template.md"
+        },
+        {
+          "name": "rubric_has_score_scale",
+          "type": "file_contains",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/references/audit-rubric.md",
+          "content": "## Score scale"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "small-audit-mode-guidance-exists",
+      "prompt": "Check whether the skill tells the agent what to do when the audit is small or time-boxed so it does not always over-delegate.",
+      "expected_output": "The skill should explain when to skip five-way delegation and do a single-pass audit.",
+      "assertions": [
+        {
+          "name": "small_audit_guidance",
+          "type": "file_contains",
+          "path": "/home/rlmit/clawdbot-skills/skills/openclaw-governance-audit/SKILL.md",
+          "content": "For smaller audits"
+        }
+      ]
+    }
+  ]
+}

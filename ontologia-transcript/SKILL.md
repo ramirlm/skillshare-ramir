@@ -1,16 +1,6 @@
 ---
 name: ontologia-transcript
 description: "Processar transcrições de reuniões usando summarize e ontology. Use quando o Ramir colar/enviar uma transcrição de reunião e quiser: (1) resumir usando a skill summarize, (2) fazer análise completa da ontologia usando a skill ontology sobre tudo o que foi dito, (3) persistir tudo no vault (Obsidian) e ontology. Se for falado sobre solução/implementação, sugere usar skill transcription para o PRD (opcional)."
-version: 1.0.0
-author: ramirlm
-triggers:
-  - "processar transcrição"
-  - "ontologia da reunião"
-  - "salvar transcrição"
-metadata:
-  clawdbot:
-    emoji: "🗺️"
-    os: ["linux", "darwin", "windows"]
 ---
 
 # Ontologia Transcript
@@ -86,7 +76,7 @@ type: "meeting"
 participants:
   - "<Nome 1>"
   - "<Nome 2>"
-project: "<Projeto>"
+project: "<slug-projeto-ou-null>"
 client: "<Cliente>"
 source: "transcript"
 tags:
@@ -94,7 +84,16 @@ tags:
   - transcript
 processedAt: "<ISO-8601>"
 summary: "<Resumo gerado pelo summarize>"
+owner: ramir
+people: [ramir]
+projects: []
+related: []
+topics: []
 ```
+
+> **Política de linking obrigatória:** Ver `~/clawdbot-agents/main/memory/vault-linking-policy.md`
+> **NUNCA rodar `clawvault link --all`** — usar somente frontmatter com slugs reais.
+> `owner: ramir` é obrigatório em toda nota gerada por esta skill.
 
 **Corpo da nota:**
 - Resumo executivo (do summarize)

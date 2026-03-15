@@ -3,22 +3,9 @@ name: reuniao-para-prd
 description: >-
   Transformar transcrições de reuniões (texto colado no chat ou arquivo) em: (1) insights práticos,
   (2) desafios observados e pontos cegos (o que pode estar faltando), e (3) opcionalmente um PRD
-  detalhado em INGLÊS para uma feature discutida. Use quando o usuário enviar "transcrição", "ata",
-  "meeting notes", "reunião", ou pedir "extrair insights/desafios" e/ou "gerar PRD". Comando-alvo:
+  detalhado em INGLÊS para uma feature discutida. Use quando o usuário enviar “transcrição”, “ata”,
+  “meeting notes”, “reunião”, ou pedir “extrair insights/desafios” e/ou “gerar PRD”. Comando-alvo:
   /reuniao-para-prd.
-version: 1.1.0
-author: ramirlm
-triggers:
-  - "/reuniao-para-prd"
-  - "transcrição"
-  - "ata de reunião"
-  - "meeting notes"
-  - "extrair insights"
-  - "gerar PRD da reunião"
-metadata:
-  clawdbot:
-    emoji: "📋"
-    os: ["linux", "darwin", "windows"]
 ---
 
 # Reunião → PRD
@@ -105,17 +92,3 @@ Use este esqueleto (adaptar conforme a reunião):
 - Não inventar fatos. Se algo não estiver na transcrição nem nas respostas do usuário: marcar como **TBD** ou **Assumption**.
 - Ser específico: números, fluxos, critérios de aceite e edge cases.
 - Se a transcrição estiver confusa/ruidosa: pedir uma versão “limpa” ou confirmar trechos críticos com perguntas direcionadas.
-
-## Privacidade & LGPD
-
-- **Dados pessoais em transcrições**: Se a transcrição contiver CPF, RG, dados bancários ou de saúde, alertar o usuário antes de processar e sugerir anonimização
-- **Participantes**: Não incluir nomes completos de participantes externos no PRD sem necessidade técnica; use "usuário", "stakeholder", "time de produto" quando possível
-- **Compartilhamento**: O PRD gerado pode conter informações confidenciais de negócio; lembrar ao usuário de classificar o documento antes de compartilhar
-- **Retenção**: Não armazenar transcrições completas em sistemas externos; o PRD é um artefato de trabalho, não um arquivo de gravação
-
-## Tratamento de Erros
-
-- **Transcrição ilegível ou muito ruidosa**: Identificar as seções problemáticas, perguntar ao usuário se deve pular ou parar
-- **Feature muito grande para um PRD**: Sugerir dividir em 2-3 PRDs menores por escopo/fase
-- **Informações contraditórias na transcrição**: Apontar a contradição como "Open Question" no PRD e pedir ao usuário para resolver
-- **Idioma misto na transcrição**: Processar normalmente; o output segue o padrão (análise PT/BR, PRD EN)

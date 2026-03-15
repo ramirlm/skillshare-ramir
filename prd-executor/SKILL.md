@@ -1,13 +1,6 @@
 ---
 name: prd-executor
 description: "Execute PRD (Product Requirements Document) coding tasks on local or remote nodes. Use when: (1) Running automated coding jobs from a PRD, (2) Dispatching tasks to Mac/Linux nodes, (3) Monitoring long-running coding agent jobs, (4) Validating completed PRD work across multiple targets."
-author: ramirlm
-version: 1.0.0
-triggers:
-  - "executar PRD"
-  - "run PRD"
-  - "dispatch coding task"
-  - "prd executor"
 metadata:
   clawdbot:
     emoji: "🚀"

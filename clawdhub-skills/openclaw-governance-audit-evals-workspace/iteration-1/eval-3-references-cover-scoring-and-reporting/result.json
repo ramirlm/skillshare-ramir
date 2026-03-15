@@ -1,0 +1,24 @@
+{
+  "id": 3,
+  "name": "references-cover-scoring-and-reporting",
+  "passed_assertions": 3,
+  "total_assertions": 3,
+  "success": true,
+  "details": [
+    {
+      "name": "rubric_exists",
+      "passed": true,
+      "reason": ""
+    },
+    {
+      "name": "template_exists",
+      "passed": true,
+      "reason": ""
+    },
+    {
+      "name": "rubric_has_score_scale",
+      "passed": true,
+      "reason": ""
+    }
+  ]
+}

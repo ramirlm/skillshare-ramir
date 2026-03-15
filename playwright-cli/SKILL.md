@@ -1,24 +1,7 @@
 ---
 name: playwright-cli
 description: Browser automation via Playwright CLI. Open pages, interact with elements, take screenshots, and more. Ideal for coding agents and automated testing workflows.
-version: 1.0.0
-author: ramirlm
-triggers:
-  - "browser automation"
-  - "playwright"
-  - "abrir página"
-  - "screenshot"
-metadata:
-  clawdbot:
-    emoji: "🎭"
-    requires:
-      bins: ["playwright-cli"]
-    install:
-      - id: node
-        kind: node
-        package: "@playwright/mcp"
-        bins: ["playwright-cli"]
-        label: "Install Playwright CLI (npm)"
+metadata: {"clawdbot":{"emoji":"🎭","requires":{"bins":["playwright-cli"]},"install":[{"id":"node","kind":"node","package":"@playwright/mcp","bins":["playwright-cli"],"label":"Install Playwright CLI (npm)"}]}}
 ---
 
 # Playwright CLI

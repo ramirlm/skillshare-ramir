@@ -12,6 +12,8 @@ import tempfile
 import subprocess
 
 ONTOLOGY_SCRIPT = Path('/home/rlmit/clawdbot-skills/skills/ontology/scripts/ontology.py')
+INBOX_RETENTION_DAYS = 30
+ARCHIVE_REVIEW_DAYS = 180
 
 KEEP_KEYWORDS = [
     "REGRAS DE SEGURANÇA",
@@ -226,17 +228,41 @@ def write_obsidian_extract(obsidian_root: Path, agent_id: str, moved_text: str, 
     if not moved_text.strip():
         return None
 
-    title = f"memory-extract-{agent_id}-{datetime.now().strftime('%Y-%m-%d')}"
+    today = datetime.now().strftime('%Y-%m-%d')
+    processed_at = now_iso_fortaleza()
+    title = f"memory-extract-{agent_id}-{today}"
     fm = {
-        "title": f"Memory Extract — {agent_id} — {datetime.now().strftime('%Y-%m-%d')}",
+        "title": f"Memory Extract — {agent_id} — {today}",
+        "type": "memory-extract",
+        "agent": agent_id,
+        "source": f"{agent_id}/MEMORY.md",
         "category": "agents",
-        "memoryType": "extract",
-        "memoryMode": "proactive",
-        "tags": ["agents", "memory", agent_id],
-        "processedAt": now_iso_fortaleza(),
+        "status": "active",
+        "retention": {
+            "inboxDays": INBOX_RETENTION_DAYS,
+            "archiveReviewDays": ARCHIVE_REVIEW_DAYS,
+            "archivePath": "archive/memory-extracts",
+        },
+        "tags": ["memory-extract", "agents", agent_id],
+        "createdAt": processed_at,
+        "date": today,
     }
+    body = [
+        "## Resumo",
+        f"- agente: {agent_id}",
+        f"- origem: `{agent_id}/MEMORY.md`",
+        f"- extraído em: {processed_at}",
+        f"- retenção: inbox por {INBOX_RETENTION_DAYS} dias; depois arquivar e revisar com {ARCHIVE_REVIEW_DAYS}+ dias",
+        "",
+        "## Conteúdo migrado",
+        redact_secrets(moved_text.strip()),
+        "",
+        "## Acompanhamento",
+        "- Revisar duplicações antes de consolidar em notas permanentes/ontology.",
+        "- Se o conteúdo continuar útil, promover para nota durável fora de `inbox`.",
+    ]
     content = "---\n" + yaml.safe_dump(fm, sort_keys=False, allow_unicode=True).strip() + "\n---\n\n"
-    content += redact_secrets(moved_text.strip()) + "\n"
+    content += "\n".join(body).rstrip() + "\n"
 
     if not write:
         return None

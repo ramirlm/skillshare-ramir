@@ -1,0 +1,245 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# skill-pdf-generator - Gera PDF a partir de Markdown
+# Uso: skill-pdf-generator --input arquivo.md --output arquivo.pdf [opções]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Valores padrão
+INPUT_FILE=""
+OUTPUT_FILE=""
+TEMPLATE=""
+ENGINE="xelatex"
+TOC=false
+NUMBER_SECTIONS=false
+CSS_FILE=""
+VERBOSE=false
+
+# Cores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Função de ajuda
+show_help() {
+    cat << 'EOF'
+skill-pdf-generator - Gera PDF a partir de Markdown
+
+Uso: skill-pdf-generator --input arquivo.md --output arquivo.pdf [opções]
+
+Opções:
+  -i, --input FILE           Arquivo Markdown de entrada (obrigatório)
+  -o, --output FILE          Arquivo PDF de saída (obrigatório)
+  -t, --template NAME        Template pandoc (opcional)
+  -e, --engine ENGINE        Motor LaTeX: xelatex, pdflatex, lualatex (padrão: xelatex)
+      --toc                  Adicionar tabela de conteúdos
+      --number-sections      Numerar seções
+      --css FILE             Arquivo CSS para estilização (fallback HTML)
+  -v, --verbose              Modo verbose
+  -h, --help                 Mostrar esta ajuda
+
+Exemplos:
+  skill-pdf-generator -i doc.md -o doc.pdf
+  skill-pdf-generator -i rel.md -o rel.pdf --toc --number-sections
+  skill-pdf-generator -i doc.md -o doc.pdf -t eisvogel -e xelatex
+EOF
+}
+
+# Função de log
+log() {
+    if [ "$VERBOSE" = true ]; then
+        echo -e "${GREEN}[skill-pdf-generator]${NC} $1" >&2
+    fi
+}
+
+warn() {
+    echo -e "${YELLOW}[AVISO]${NC} $1" >&2
+}
+
+error() {
+    echo -e "${RED}[ERRO]${NC} $1" >&2
+    exit 1
+}
+
+# Parse argumentos
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -i|--input)
+            INPUT_FILE="$2"
+            shift 2
+            ;;
+        -o|--output)
+            OUTPUT_FILE="$2"
+            shift 2
+            ;;
+        -t|--template)
+            TEMPLATE="$2"
+            shift 2
+            ;;
+        -e|--engine)
+            ENGINE="$2"
+            shift 2
+            ;;
+        --toc)
+            TOC=true
+            shift
+            ;;
+        --number-sections)
+            NUMBER_SECTIONS=true
+            shift
+            ;;
+        --css)
+            CSS_FILE="$2"
+            shift 2
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            error "Opção desconhecida: $1"
+            ;;
+    esac
+done
+
+# Validações
+if [ -z "$INPUT_FILE" ]; then
+    error "Arquivo de entrada não especificado. Use --input"
+fi
+
+if [ -z "$OUTPUT_FILE" ]; then
+    error "Arquivo de saída não especificado. Use --output"
+fi
+
+if [ ! -f "$INPUT_FILE" ]; then
+    error "Arquivo de entrada não encontrado: $INPUT_FILE"
+fi
+
+log "Entrada: $INPUT_FILE"
+log "Saída: $OUTPUT_FILE"
+log "Engine: $ENGINE"
+
+# Cria diretório de saída se não existir
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+
+# Função para gerar PDF com pandoc
+generate_with_pandoc() {
+    local cmd="pandoc \"$INPUT_FILE\" -o \"$OUTPUT_FILE\" --from markdown --to pdf --pdf-engine=$ENGINE"
+    
+    if [ -n "$TEMPLATE" ]; then
+        # Procura template em locais padrão
+        local template_path=""
+        local template_dirs=(
+            "$HOME/.pandoc/templates"
+            "$HOME/.local/share/pandoc/templates"
+            "/usr/share/pandoc/templates"
+            "/usr/local/share/pandoc/templates"
+        )
+        
+        for dir in "${template_dirs[@]}"; do
+            if [ -f "$dir/$TEMPLATE.tex" ] || [ -f "$dir/$TEMPLATE.latex" ]; then
+                template_path="$dir/$TEMPLATE"
+                break
+            fi
+        done
+        
+        if [ -n "$template_path" ]; then
+            cmd="$cmd --template=$template_path"
+        else
+            warn "Template '$TEMPLATE' não encontrado, usando padrão"
+        fi
+    fi
+    
+    if [ "$TOC" = true ]; then
+        cmd="$cmd --toc"
+    fi
+    
+    if [ "$NUMBER_SECTIONS" = true ]; then
+        cmd="$cmd --number-sections"
+    fi
+    
+    # Adiciona configurações úteis
+    cmd="$cmd --variable geometry=margin=2cm"
+    cmd="$cmd --variable mainfont='DejaVu Sans'"
+    cmd="$cmd --variable sansfont='DejaVu Sans'"
+    cmd="$cmd --variable monofont='DejaVu Sans Mono'"
+    cmd="$cmd --variable fontsize=11pt"
+    
+    log "Comando: $cmd"
+    eval $cmd
+}
+
+# Função para fallback com wkhtmltopdf
+generate_with_wkhtmltopdf() {
+    local html_file="${OUTPUT_FILE%.pdf}.tmp.html"
+    
+    warn "Pandoc não disponível, usando fallback wkhtmltopdf..."
+    
+    # Converte Markdown para HTML
+    if command -v pandoc &>/dev/null; then
+        pandoc "$INPUT_FILE" -o "$html_file" --from markdown --to html --standalone
+    else
+        # Fallback extremo: markdown básico
+        if command -v markdown &>/dev/null; then
+            markdown "$INPUT_FILE" > "$html_file"
+        else
+            # Último recurso: copia como texto
+            cp "$INPUT_FILE" "$html_file"
+        fi
+    fi
+    
+    if ! command -v wkhtmltopdf &>/dev/null; then
+        error "wkhtmltopdf não encontrado. Instale pandoc ou wkhtmltopdf."
+    fi
+    
+    wkhtmltopdf --enable-local-file-access --page-size A4 "$html_file" "$OUTPUT_FILE"
+    rm -f "$html_file"
+}
+
+# Função para fallback com chrome
+generate_with_chrome() {
+    local html_file="${OUTPUT_FILE%.pdf}.tmp.html"
+    
+    warn "Usando fallback Chrome headless..."
+    
+    pandoc "$INPUT_FILE" -o "$html_file" --from markdown --to html --standalone 2>/dev/null || \
+        (command -v markdown &>/dev/null && markdown "$INPUT_FILE" > "$html_file") || \
+        cp "$INPUT_FILE" "$html_file"
+    
+    if command -v google-chrome &>/dev/null; then
+        google-chrome --headless --disable-gpu --print-to-pdf="$OUTPUT_FILE" --no-margins "$html_file" 2>/dev/null
+    elif command -v chromium &>/dev/null; then
+        chromium --headless --disable-gpu --print-to-pdf="$OUTPUT_FILE" --no-margins "$html_file" 2>/dev/null
+    else
+        error "Nenhum gerador de PDF disponível (pandoc, wkhtmltopdf ou chrome)"
+    fi
+    
+    rm -f "$html_file"
+}
+
+# Tenta gerar PDF na ordem de preferência
+if command -v pandoc &>/dev/null && command -v "$ENGINE" &>/dev/null; then
+    log "Usando pandoc com $ENGINE..."
+    generate_with_pandoc
+elif command -v wkhtmltopdf &>/dev/null; then
+    generate_with_wkhtmltopdf
+elif command -v google-chrome &>/dev/null || command -v chromium &>/dev/null; then
+    generate_with_chrome
+else
+    error "Nenhuma ferramenta de geração de PDF disponível. Instale pandoc+texlive-xetex ou wkhtmltopdf."
+fi
+
+# Verifica se o PDF foi gerado
+if [ -f "$OUTPUT_FILE" ]; then
+    size=$(du -h "$OUTPUT_FILE" | cut -f1)
+    echo -e "${GREEN}✓ PDF gerado com sucesso:${NC} $OUTPUT_FILE ($size)"
+else
+    error "Falha ao gerar PDF"
+fi

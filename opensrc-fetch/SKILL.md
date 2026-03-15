@@ -1,16 +1,6 @@
 ---
 name: opensrc-fetch
 description: Fetch npm package source code and public GitHub repositories with opensrc to give coding agents deeper context than type definitions only. Use when coding tasks need implementation inspection, when docs are insufficient, or when onboarding quickly into a dependency's internals.
-version: 1.0.0
-triggers:
-  - "fetch source"
-  - "opensrc"
-  - "ver código fonte"
-  - "inspecionar dependência"
-metadata:
-  clawdbot:
-    emoji: "📦"
-    os: ["linux", "darwin", "windows"]
 ---
 
 # opensrc-fetch
