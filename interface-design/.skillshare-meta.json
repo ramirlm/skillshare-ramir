@@ -1,0 +1,16 @@
+{
+  "source": "github.com/Dammyjay93/interface-design/.claude/skills/interface-design",
+  "type": "github-subdir",
+  "installed_at": "2026-03-11T07:53:48.094640285-03:00",
+  "repo_url": "https://github.com/Dammyjay93/interface-design.git",
+  "subdir": ".claude/skills/interface-design",
+  "version": "8c407c1",
+  "tree_hash": "3c1c18ac9f9732a8be68cb8504bf234fdafcf5c8",
+  "file_hashes": {
+    "SKILL.md": "sha256:9bfdf30dcc1734541a87100dbc6c6eeb33249c6ccd09be85857e686aed6b8b97",
+    "references/critique.md": "sha256:48903ec19affbb4bf544f51beedd31aef03469730c8802711c0f6637465c8142",
+    "references/example.md": "sha256:6914c93b92bea70792db7dd062a8677eccd67e83cb55da493611f8ea5bdff5bf",
+    "references/principles.md": "sha256:1ee5305f8a2c94831303a4b77128e2319c67e14cc194245606b0143e261ac410",
+    "references/validation.md": "sha256:2fa4730b8d82f3cc227c1e807fd2b31ed464445ffcd09c145dd2cc7d3e90f150"
+  }
+}

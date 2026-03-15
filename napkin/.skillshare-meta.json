@@ -1,0 +1,12 @@
+{
+  "source": "https://github.com/blader/napkin",
+  "type": "github",
+  "installed_at": "2026-03-11T07:54:38.804833481-03:00",
+  "repo_url": "https://github.com/blader/napkin.git",
+  "version": "27fa60a",
+  "file_hashes": {
+    "LICENSE": "sha256:311df79b86fcebfe76d3267fb4f786888b6263aa028488b1aa1e9bea3cb95836",
+    "README.md": "sha256:cb6a59553d0a7522b9a2acff1933aea8698a39c56594a172ec66ee83fb3e8c5f",
+    "SKILL.md": "sha256:3a4cae73a78a6bb97e9456ee28da3e1e60f414848e71ba24941d31f229ab9602"
+  }
+}

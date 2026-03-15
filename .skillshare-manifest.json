@@ -1,0 +1,18 @@
+{
+  "managed": {
+    "1password": "symlink",
+    "coding-agent": "symlink",
+    "gh-issues": "symlink",
+    "github": "symlink",
+    "gog": "symlink",
+    "interface-design": "symlink",
+    "mcporter": "symlink",
+    "napkin": "symlink",
+    "notion": "symlink",
+    "playwright-auth": "symlink",
+    "skillshare": "symlink",
+    "summarize": "symlink",
+    "tmux": "symlink"
+  },
+  "updated_at": "2026-03-11T07:55:40.056187983-03:00"
+}
